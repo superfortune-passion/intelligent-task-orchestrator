@@ -1,5 +1,5 @@
 /**
- * Kills stale Next dev processes on port 3000, clears .next, starts dev server.
+ * Stops stale Next dev servers, clears build caches, starts a clean dev server.
  */
 const { execSync, spawn } = require("child_process");
 const fs = require("fs");
@@ -7,14 +7,15 @@ const path = require("path");
 
 const root = path.join(__dirname, "..");
 const nextDir = path.join(root, ".next");
+const webpackCache = path.join(root, "node_modules", ".cache");
 
 function killPort(port) {
   try {
     if (process.platform === "win32") {
-      const out = execSync(
-        `netstat -ano | findstr :${port}`,
-        { encoding: "utf8", stdio: ["pipe", "pipe", "ignore"] }
-      );
+      const out = execSync(`netstat -ano | findstr :${port}`, {
+        encoding: "utf8",
+        stdio: ["pipe", "pipe", "ignore"],
+      });
       const pids = new Set();
       for (const line of out.split("\n")) {
         const m = line.trim().match(/\s+(\d+)\s*$/);
@@ -27,18 +28,35 @@ function killPort(port) {
           /* already gone */
         }
       }
+    } else {
+      execSync(`lsof -ti:${port} | xargs kill -9 2>/dev/null`, {
+        stdio: "ignore",
+        shell: true,
+      });
     }
   } catch {
     /* port free */
   }
 }
 
-if (fs.existsSync(nextDir)) {
-  fs.rmSync(nextDir, { recursive: true, force: true });
-  console.log("Removed .next cache");
+function rmDir(dir) {
+  if (!fs.existsSync(dir)) return;
+  try {
+    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3 });
+    console.log(`Removed ${path.relative(root, dir)}`);
+  } catch (err) {
+    console.warn(`Could not remove ${dir}:`, err.message);
+  }
 }
 
-killPort(3000);
+// Stop dev server BEFORE deleting cache (Windows file locks)
+for (const port of [3000, 3001, 3002, 3003, 3004]) {
+  killPort(port);
+}
+
+rmDir(nextDir);
+rmDir(webpackCache);
+
 console.log("Starting dev server on http://localhost:3000 ...");
 
 const child = spawn("npx", ["next", "dev", "-p", "3000"], {
