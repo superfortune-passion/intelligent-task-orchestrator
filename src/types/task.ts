@@ -66,3 +66,11 @@ export function statusFromColumnId(columnId: string): TaskStatus | null {
 export function columnIdFromStatus(status: TaskStatus): string {
   return `column-${STATUS_COLUMN_SLUG[status]}`;
 }
+
+const VALID_STATUSES = new Set<TaskStatus>(
+  TASK_STATUSES.map((s) => s.id)
+);
+
+export function isValidTaskStatus(value: string): value is TaskStatus {
+  return VALID_STATUSES.has(value as TaskStatus);
+}

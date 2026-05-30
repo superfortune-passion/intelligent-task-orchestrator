@@ -4,11 +4,13 @@ import { useMemo, useState } from "react";
 import {
   DndContext,
   DragOverlay,
-  closestCorners,
   KeyboardSensor,
   PointerSensor,
+  closestCorners,
+  pointerWithin,
   useSensor,
   useSensors,
+  type CollisionDetection,
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
@@ -19,6 +21,7 @@ import {
 } from "@dnd-kit/sortable";
 import {
   TASK_STATUSES,
+  isValidTaskStatus,
   statusFromColumnId,
   type Task,
   type TaskStatus,
@@ -83,7 +86,10 @@ export function KanbanBoard({
       Done: [],
     };
     filteredTasks.forEach((t) => {
-      map[t.status].push(t);
+      const bucket: TaskStatus = isValidTaskStatus(t.status)
+        ? t.status
+        : "To Do";
+      map[bucket].push(t);
     });
     (Object.keys(map) as TaskStatus[]).forEach((key) => {
       map[key].sort((a, b) => a.order - b.order);
@@ -98,51 +104,73 @@ export function KanbanBoard({
     })
   );
 
+  const collisionDetection: CollisionDetection = (args) => {
+    const pointerHits = pointerWithin(args);
+    if (pointerHits.length > 0) return pointerHits;
+    return closestCorners(args);
+  };
+
+  const resolveDestinationStatus = (
+    overId: string,
+    allTasks: Task[]
+  ): TaskStatus | null => {
+    const fromColumn = statusFromColumnId(overId);
+    if (fromColumn && isValidTaskStatus(fromColumn)) return fromColumn;
+
+    const overTask = allTasks.find((t) => t.id === overId);
+    if (overTask && isValidTaskStatus(overTask.status)) {
+      return overTask.status;
+    }
+
+    return null;
+  };
+
   const handleDragStart = (event: DragStartEvent) => {
     if (isGenerating) return;
     const task = tasks.find((t) => t.id === event.active.id);
     if (task) setActiveTask(task);
   };
 
+  const handleDragCancel = () => {
+    setActiveTask(null);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveTask(null);
     if (isGenerating) return;
+
     const { active, over } = event;
     if (!over) return;
 
-    const taskId = active.id as string;
-    const task = tasks.find((t) => t.id === taskId);
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    if (activeId === overId) return;
+
+    const task = tasks.find((t) => t.id === activeId);
     if (!task) return;
 
-    let newStatus: TaskStatus = task.status;
-    const overId = over.id as string;
+    const newStatus = resolveDestinationStatus(overId, tasks);
+    if (!newStatus || !isValidTaskStatus(newStatus)) return;
 
-    const columnStatus = statusFromColumnId(overId);
-    if (columnStatus) {
-      newStatus = columnStatus;
-    } else {
-      const overTask = tasks.find((t) => t.id === overId);
-      if (overTask) newStatus = overTask.status;
-    }
-
-    const columnTasks = tasks
+    const destTasks = tasks
       .filter(
         (t) =>
           t.projectId === task.projectId &&
           t.status === newStatus &&
-          t.id !== taskId
+          t.id !== activeId
       )
       .sort((a, b) => a.order - b.order);
 
-    let newOrder = columnTasks.length;
+    let newOrder = destTasks.length;
     const overTask = tasks.find((t) => t.id === overId);
-    if (overTask && overTask.id !== taskId) {
+    if (overTask && overTask.id !== activeId) {
       newOrder = overTask.order;
     }
 
-    if (task.status !== newStatus || task.order !== newOrder) {
-      onMoveTask(taskId, newStatus, newOrder);
-    }
+    if (task.status === newStatus && task.order === newOrder) return;
+
+    onMoveTask(activeId, newStatus, newOrder);
   };
 
   return (
@@ -158,8 +186,9 @@ export function KanbanBoard({
 
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCorners}
+        collisionDetection={collisionDetection}
         onDragStart={handleDragStart}
+        onDragCancel={handleDragCancel}
         onDragEnd={handleDragEnd}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 pb-6">

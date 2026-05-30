@@ -9,7 +9,12 @@ import {
 import { createTaskEntity, updateTaskEntity } from "@/services/tasks";
 import type { AppState } from "@/types";
 import type { ProjectFormData } from "@/types/project";
-import type { Task, TaskFormData, TaskStatus } from "@/types/task";
+import {
+  isValidTaskStatus,
+  type Task,
+  type TaskFormData,
+  type TaskStatus,
+} from "@/types/task";
 
 export function useAppStore() {
   const [state, setState] = useState<AppState>({ projects: [], tasks: [] });
@@ -114,31 +119,55 @@ export function useAppStore() {
 
   const moveTask = useCallback(
     (taskId: string, newStatus: TaskStatus, newOrder: number) => {
-      setState((prev) => {
-        const task = prev.tasks.find((t) => t.id === taskId);
-        if (!task) return prev;
+      if (!isValidTaskStatus(newStatus)) return;
 
-        const updated = prev.tasks.map((t) => {
-          if (t.id === taskId) {
-            return {
-              ...t,
-              status: newStatus,
-              order: newOrder,
-              updatedAt: new Date().toISOString(),
-            };
-          }
-          if (
-            t.projectId === task.projectId &&
-            t.status === newStatus &&
-            t.id !== taskId &&
-            t.order >= newOrder
-          ) {
-            return { ...t, order: t.order + 1 };
-          }
-          return t;
+      setState((prev) => {
+        const movedIndex = prev.tasks.findIndex((t) => t.id === taskId);
+        if (movedIndex === -1) return prev;
+
+        const tasks = prev.tasks.map((t) => ({ ...t }));
+        const moved = tasks[movedIndex];
+        const projectId = moved.projectId;
+        const oldStatus = moved.status;
+
+        if (oldStatus !== newStatus) {
+          const oldColumn = tasks
+            .filter(
+              (t) =>
+                t.projectId === projectId &&
+                t.status === oldStatus &&
+                t.id !== taskId
+            )
+            .sort((a, b) => a.order - b.order);
+          oldColumn.forEach((t, index) => {
+            const ref = tasks.find((x) => x.id === t.id);
+            if (ref) ref.order = index;
+          });
+        }
+
+        moved.status = newStatus;
+        moved.updatedAt = new Date().toISOString();
+
+        const destColumn = tasks
+          .filter(
+            (t) =>
+              t.projectId === projectId &&
+              t.status === newStatus &&
+              t.id !== taskId
+          )
+          .sort((a, b) => a.order - b.order);
+
+        const insertAt = Math.max(
+          0,
+          Math.min(newOrder, destColumn.length)
+        );
+        destColumn.splice(insertAt, 0, moved);
+        destColumn.forEach((t, index) => {
+          const ref = tasks.find((x) => x.id === t.id);
+          if (ref) ref.order = index;
         });
 
-        return { ...prev, tasks: updated };
+        return { ...prev, tasks };
       });
     },
     []
