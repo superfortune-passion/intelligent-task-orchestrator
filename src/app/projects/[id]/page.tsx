@@ -15,7 +15,9 @@ import { MagicGenerate } from "@/components/ai/magic-generate";
 import { KanbanBoard } from "@/components/kanban/kanban-board";
 import { TaskFormDialog } from "@/components/tasks/task-form-dialog";
 import { DeleteTaskDialog } from "@/components/tasks/delete-task-dialog";
-import { ProjectFormDialog } from "@/components/projects/project-form-dialog";
+import { useProjectCrud } from "@/hooks/use-project-crud";
+import { ProjectCrudModals } from "@/components/projects/project-crud-modals";
+import { getProjectAccentColor } from "@/lib/project-color";
 import { EmptyState } from "@/components/shared/empty-state";
 import { TeamAvatars } from "@/components/shared/team-avatars";
 import { Button } from "@/components/ui/button";
@@ -45,10 +47,11 @@ export default function ProjectWorkspacePage({
     updateTask,
     deleteTask,
     moveTask,
-    updateProject,
   } = useApp();
+  const crud = useProjectCrud();
 
   const project = getProject(id);
+  const accent = project ? getProjectAccentColor(project.id) : "#6366f1";
   const tasks = getTasksByProject(id);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -57,7 +60,6 @@ export default function ProjectWorkspacePage({
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [deleteTaskTarget, setDeleteTaskTarget] = useState<Task | null>(null);
-  const [editProjectOpen, setEditProjectOpen] = useState(false);
 
   const filteredCount = useMemo(() => {
     return tasks.filter((t) => {
@@ -122,11 +124,11 @@ export default function ProjectWorkspacePage({
           <div className="flex items-start gap-4 min-w-0">
             <div
               className="h-12 w-12 rounded-xl shrink-0 flex items-center justify-center"
-              style={{ backgroundColor: `${project.color}22` }}
+              style={{ backgroundColor: `${accent}22` }}
             >
               <div
                 className="h-4 w-4 rounded-full"
-                style={{ backgroundColor: project.color }}
+                style={{ backgroundColor: accent }}
               />
             </div>
             <div className="min-w-0 flex-1">
@@ -138,7 +140,7 @@ export default function ProjectWorkspacePage({
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 shrink-0"
-                  onClick={() => setEditProjectOpen(true)}
+                  onClick={() => crud.openEdit(project)}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -292,15 +294,16 @@ export default function ProjectWorkspacePage({
         }}
       />
 
-      <ProjectFormDialog
-        open={editProjectOpen}
-        onOpenChange={setEditProjectOpen}
-        project={project}
-        mode="edit"
-        onSubmit={(data) => {
-          updateProject(project.id, data);
-          toast({ title: "Project updated", variant: "success" });
-        }}
+      <ProjectCrudModals
+        createOpen={crud.createOpen}
+        onCreateOpenChange={crud.setCreateOpen}
+        editProject={crud.editProject}
+        onEditOpenChange={(open) => !open && crud.setEditProject(null)}
+        deleteTarget={crud.deleteTarget}
+        onDeleteOpenChange={(open) => !open && crud.setDeleteTarget(null)}
+        onCreate={crud.handleCreate}
+        onUpdate={crud.handleUpdate}
+        onDeleteConfirm={crud.handleDeleteConfirm}
       />
     </div>
   );

@@ -153,3 +153,16 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.35);
 }
+
+/* Dashboard layout */
+.dashboard-page {
+  overflow-x: hidden;
+}
+
+.dashboard-page h1,
+.dashboard-page h2,
+.dashboard-page h3,
+.dashboard-page p {
+  overflow-wrap: anywhere;
+  word-wrap: break-word;
+}

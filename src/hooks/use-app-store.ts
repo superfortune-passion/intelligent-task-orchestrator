@@ -1,16 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { generateId } from "@/lib/id";
 import { loadState, saveState } from "@/services/storage";
+import {
+  createProjectEntity,
+  updateProjectEntity,
+} from "@/services/projects";
 import type {
   AppState,
-  Project,
-  ProjectFormData,
   Task,
   TaskFormData,
   TaskStatus,
 } from "@/types";
+import type { ProjectFormData } from "@/types/project";
+import { generateId } from "@/lib/id";
 
 export function useAppStore() {
   const [state, setState] = useState<AppState>({ projects: [], tasks: [] });
@@ -26,15 +29,7 @@ export function useAppStore() {
   }, [state, hydrated]);
 
   const createProject = useCallback((data: ProjectFormData) => {
-    const now = new Date().toISOString();
-    const project: Project = {
-      id: generateId(),
-      title: data.title.trim(),
-      description: data.description.trim(),
-      color: data.color,
-      createdAt: now,
-      updatedAt: now,
-    };
+    const project = createProjectEntity(data);
     setState((prev) => ({
       ...prev,
       projects: [project, ...prev.projects],
@@ -42,25 +37,18 @@ export function useAppStore() {
     return project;
   }, []);
 
-  const updateProject = useCallback(
-    (id: string, data: Partial<ProjectFormData>) => {
-      setState((prev) => ({
+  const updateProject = useCallback((id: string, data: ProjectFormData) => {
+    setState((prev) => {
+      const existing = prev.projects.find((p) => p.id === id);
+      if (!existing) return prev;
+      const updated = updateProjectEntity(existing, data);
+      const rest = prev.projects.filter((p) => p.id !== id);
+      return {
         ...prev,
-        projects: prev.projects.map((p) =>
-          p.id === id
-            ? {
-                ...p,
-                ...data,
-                title: data.title?.trim() ?? p.title,
-                description: data.description?.trim() ?? p.description,
-                updatedAt: new Date().toISOString(),
-              }
-            : p
-        ),
-      }));
-    },
-    []
-  );
+        projects: [updated, ...rest],
+      };
+    });
+  }, []);
 
   const deleteProject = useCallback((id: string) => {
     setState((prev) => ({

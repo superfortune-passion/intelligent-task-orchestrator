@@ -34,7 +34,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <span className="text-sm font-semibold">Intelligent Task Orchestrator</span>
+            <span className="text-sm font-semibold truncate min-w-0">
+              Intelligent Task Orchestrator
+            </span>
           </header>
           <main className="min-h-[calc(100vh-3.5rem)] lg:min-h-screen">
             {children}

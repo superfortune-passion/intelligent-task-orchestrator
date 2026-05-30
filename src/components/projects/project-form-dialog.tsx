@@ -13,8 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { PROJECT_COLORS, type Project, type ProjectFormData } from "@/types";
-import { cn } from "@/lib/utils";
+import type { Project, ProjectFormData } from "@/types/project";
 
 interface ProjectFormDialogProps {
   open: boolean;
@@ -33,81 +32,68 @@ export function ProjectFormDialog({
 }: ProjectFormDialogProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [color, setColor] = useState(PROJECT_COLORS[0]);
 
   useEffect(() => {
-    if (open && project) {
+    if (!open) return;
+    if (project) {
       setTitle(project.title);
       setDescription(project.description);
-      setColor(project.color);
-    } else if (open && !project) {
+    } else {
       setTitle("");
       setDescription("");
-      setColor(PROJECT_COLORS[0]);
     }
   }, [open, project]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-    onSubmit({ title, description, color });
+    onSubmit({ title, description });
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
             {mode === "create" ? "Create Project" : "Edit Project"}
           </DialogTitle>
           <DialogDescription>
             {mode === "create"
-              ? "Define your project to start building an execution plan."
-              : "Update your project details."}
+              ? "Add a new execution workspace with a title and description."
+              : "Update the title or description for this project."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="project-title">Project Title</Label>
+            <Label htmlFor="project-title">
+              Title <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="project-title"
               placeholder="e.g. Launch a New Product"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
+              autoFocus
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="project-description">Description</Label>
             <Textarea
               id="project-description"
-              placeholder="Brief overview of project goals..."
+              placeholder="Brief overview of goals and scope..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={3}
+              rows={4}
             />
           </div>
-          <div className="space-y-2">
-            <Label>Color</Label>
-            <div className="flex flex-wrap gap-2">
-              {PROJECT_COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  className={cn(
-                    "h-8 w-8 rounded-full transition-transform hover:scale-110 ring-2 ring-offset-2 ring-offset-background",
-                    color === c ? "ring-white/60 scale-110" : "ring-transparent"
-                  )}
-                  style={{ backgroundColor: c }}
-                  onClick={() => setColor(c)}
-                  aria-label={`Select color ${c}`}
-                />
-              ))}
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" disabled={!title.trim()}>

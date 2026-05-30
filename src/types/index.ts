@@ -26,21 +26,14 @@ export interface Task {
   order: number;
 }
 
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  color: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export type { Project, ProjectFormData } from "@/types/project";
+
+import type { Project } from "@/types/project";
 
 export interface AppState {
   projects: Project[];
   tasks: Task[];
 }
-
-export type ProjectFormData = Pick<Project, "title" | "description" | "color">;
 
 export type TaskFormData = Pick<
   Task,
@@ -70,14 +63,4 @@ export const TASK_CATEGORIES: TaskCategory[] = [
   "Design",
   "Development",
   "General",
-];
-
-export const PROJECT_COLORS = [
-  "#6366f1",
-  "#8b5cf6",
-  "#a855f7",
-  "#ec4899",
-  "#14b8a6",
-  "#3b82f6",
-  "#f59e0b",
 ];
