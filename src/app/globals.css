@@ -4,9 +4,12 @@
 
 @layer base {
   :root {
+    color-scheme: dark;
     --radius: 0.625rem;
     --background: #070b14;
     --foreground: #e8ecf4;
+    --field: #0c1222;
+    --field-foreground: #e8ecf4;
     --card: rgba(15, 23, 42, 0.65);
     --card-foreground: #e8ecf4;
     --popover: #0f172a;
@@ -39,6 +42,25 @@
     font-family: var(--font-geist-sans), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
+  }
+
+  /* Form fields — dark surface, readable text (fixes white browser defaults) */
+  input,
+  textarea,
+  select {
+    color-scheme: dark;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--field) inset !important;
+    -webkit-text-fill-color: var(--field-foreground) !important;
+    caret-color: var(--field-foreground);
+    transition: background-color 5000s ease-in-out 0s;
   }
 }
 

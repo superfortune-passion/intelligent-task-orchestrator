@@ -42,6 +42,10 @@ module.exports = {
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
+        field: {
+          DEFAULT: "var(--field)",
+          foreground: "var(--field-foreground)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
