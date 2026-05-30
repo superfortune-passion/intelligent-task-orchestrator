@@ -17,39 +17,37 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { TASK_STATUSES, type Task, type TaskStatus } from "@/types";
+import {
+  TASK_STATUSES,
+  statusFromColumnId,
+  type Task,
+  type TaskStatus,
+} from "@/types/task";
 import { KanbanColumn } from "@/components/kanban/kanban-column";
 import { TaskCard } from "@/components/tasks/task-card";
 
 interface KanbanBoardProps {
   tasks: Task[];
   onMoveTask: (taskId: string, status: TaskStatus, order: number) => void;
+  onAddTask: (status: TaskStatus) => void;
   onEditTask: (task: Task) => void;
   onDeleteTask: (task: Task) => void;
   searchQuery: string;
   filterPriority: string;
   filterCategory: string;
-}
-
-function getColumnId(status: TaskStatus) {
-  return `column-${status}`;
-}
-
-function parseColumnId(id: string): TaskStatus | null {
-  if (id.startsWith("column-")) {
-    return id.replace("column-", "") as TaskStatus;
-  }
-  return null;
+  isLoading?: boolean;
 }
 
 export function KanbanBoard({
   tasks,
   onMoveTask,
+  onAddTask,
   onEditTask,
   onDeleteTask,
   searchQuery,
   filterPriority,
   filterCategory,
+  isLoading = false,
 }: KanbanBoardProps) {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
@@ -69,23 +67,25 @@ export function KanbanBoard({
 
   const tasksByStatus = useMemo(() => {
     const map: Record<TaskStatus, Task[]> = {
-      todo: [],
-      in_progress: [],
-      review: [],
-      done: [],
+      "To Do": [],
+      "In Progress": [],
+      Review: [],
+      Done: [],
     };
     filteredTasks.forEach((t) => {
       map[t.status].push(t);
     });
-    Object.keys(map).forEach((key) => {
-      map[key as TaskStatus].sort((a, b) => a.order - b.order);
+    (Object.keys(map) as TaskStatus[]).forEach((key) => {
+      map[key].sort((a, b) => a.order - b.order);
     });
     return map;
   }, [filteredTasks]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -105,7 +105,7 @@ export function KanbanBoard({
     let newStatus: TaskStatus = task.status;
     const overId = over.id as string;
 
-    const columnStatus = parseColumnId(overId);
+    const columnStatus = statusFromColumnId(overId);
     if (columnStatus) {
       newStatus = columnStatus;
     } else {
@@ -114,15 +114,18 @@ export function KanbanBoard({
     }
 
     const columnTasks = tasks
-      .filter((t) => t.projectId === task.projectId && t.status === newStatus && t.id !== taskId)
+      .filter(
+        (t) =>
+          t.projectId === task.projectId &&
+          t.status === newStatus &&
+          t.id !== taskId
+      )
       .sort((a, b) => a.order - b.order);
 
     let newOrder = columnTasks.length;
-    if (!columnStatus && over.id !== overId) {
-      const overTask = tasks.find((t) => t.id === overId);
-      if (overTask) {
-        newOrder = overTask.order;
-      }
+    const overTask = tasks.find((t) => t.id === overId);
+    if (overTask && overTask.id !== taskId) {
+      newOrder = overTask.order;
     }
 
     if (task.status !== newStatus || task.order !== newOrder) {
@@ -137,7 +140,7 @@ export function KanbanBoard({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 pb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 pb-6">
         {TASK_STATUSES.map((col) => (
           <SortableContext
             key={col.id}
@@ -145,18 +148,19 @@ export function KanbanBoard({
             strategy={verticalListSortingStrategy}
           >
             <KanbanColumn
-              id={getColumnId(col.id)}
               title={col.label}
               status={col.id}
               count={tasksByStatus[col.id].length}
               tasks={tasksByStatus[col.id]}
+              isLoading={isLoading}
+              onAddTask={onAddTask}
               onEditTask={onEditTask}
               onDeleteTask={onDeleteTask}
             />
           </SortableContext>
         ))}
       </div>
-      <DragOverlay dropAnimation={{ duration: 200, easing: "ease" }}>
+      <DragOverlay dropAnimation={{ duration: 250, easing: "cubic-bezier(0.2, 0, 0, 1)" }}>
         {activeTask ? (
           <TaskCard
             task={activeTask}

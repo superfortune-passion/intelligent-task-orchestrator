@@ -32,7 +32,7 @@ export default function DashboardPage() {
       const projectTasks = tasks.filter((t) => t.projectId === projectId);
       return {
         total: projectTasks.length,
-        completed: projectTasks.filter((t) => t.status === "done").length,
+        completed: projectTasks.filter((t) => t.status === "Done").length,
       };
     },
     [tasks]

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useMemo } from "react";
+import { use, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -11,11 +11,10 @@ import {
   ListTodo,
 } from "lucide-react";
 import { useApp } from "@/components/providers/app-provider";
-import { MagicGenerate } from "@/components/ai/magic-generate";
-import { KanbanBoard } from "@/components/kanban/kanban-board";
-import { TaskFormDialog } from "@/components/tasks/task-form-dialog";
-import { DeleteTaskDialog } from "@/components/tasks/delete-task-dialog";
 import { useProjectCrud } from "@/hooks/use-project-crud";
+import { useTaskCrud } from "@/hooks/use-task-crud";
+import { KanbanBoard } from "@/components/kanban/kanban-board";
+import { TaskCrudModals } from "@/components/tasks/task-crud-modals";
 import { ProjectCrudModals } from "@/components/projects/project-crud-modals";
 import { getProjectAccentColor } from "@/lib/project-color";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -29,8 +28,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "@/hooks/use-toast";
-import { TASK_CATEGORIES, TASK_PRIORITIES, type Task } from "@/types";
+import {
+  TASK_CATEGORY_SUGGESTIONS,
+  TASK_PRIORITIES,
+} from "@/types/task";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProjectWorkspacePage({
@@ -39,16 +40,9 @@ export default function ProjectWorkspacePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const {
-    hydrated,
-    getProject,
-    getTasksByProject,
-    createTask,
-    updateTask,
-    deleteTask,
-    moveTask,
-  } = useApp();
-  const crud = useProjectCrud();
+  const { hydrated, getProject, getTasksByProject, moveTask } = useApp();
+  const projectCrud = useProjectCrud();
+  const taskCrud = useTaskCrud(id);
 
   const project = getProject(id);
   const accent = project ? getProjectAccentColor(project.id) : "#6366f1";
@@ -57,9 +51,6 @@ export default function ProjectWorkspacePage({
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPriority, setFilterPriority] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
-  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
-  const [editTask, setEditTask] = useState<Task | null>(null);
-  const [deleteTaskTarget, setDeleteTaskTarget] = useState<Task | null>(null);
 
   const filteredCount = useMemo(() => {
     return tasks.filter((t) => {
@@ -76,12 +67,12 @@ export default function ProjectWorkspacePage({
 
   if (!hydrated) {
     return (
-      <div className="p-6 md:p-8 space-y-6">
+      <div className="p-4 sm:p-6 md:p-8 space-y-6 max-w-[1600px] mx-auto">
         <Skeleton className="h-12 w-64" />
         <Skeleton className="h-10 w-full max-w-xl" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="h-96 rounded-xl" />
+            <Skeleton key={i} className="h-[320px] rounded-xl" />
           ))}
         </div>
       </div>
@@ -106,7 +97,7 @@ export default function ProjectWorkspacePage({
   }
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 max-w-[1600px] mx-auto">
+    <div className="p-4 sm:p-6 md:p-8 max-w-[1600px] mx-auto w-full overflow-x-hidden">
       <div className="mb-6">
         <Button
           variant="ghost"
@@ -140,16 +131,16 @@ export default function ProjectWorkspacePage({
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 shrink-0"
-                  onClick={() => crud.openEdit(project)}
+                  onClick={() => projectCrud.openEdit(project)}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
               </div>
-              {project.description && (
+              {project.description ? (
                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2 break-words">
                   {project.description}
                 </p>
-              )}
+              ) : null}
               <div className="flex items-center gap-4 mt-3 flex-wrap">
                 <TeamAvatars />
                 <span className="text-xs text-muted-foreground">
@@ -161,23 +152,14 @@ export default function ProjectWorkspacePage({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setEditTask(null);
-                setTaskDialogOpen(true);
-              }}
-              className="gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Add Task
-            </Button>
-            <MagicGenerate
-              projectId={project.id}
-              projectTitle={project.title}
-            />
-          </div>
+          <Button
+            variant="default"
+            onClick={() => taskCrud.openCreate("To Do")}
+            className="gap-2 shrink-0 w-full sm:w-auto justify-center"
+          >
+            <Plus className="h-4 w-4" />
+            Add Task
+          </Button>
         </div>
       </div>
 
@@ -193,8 +175,8 @@ export default function ProjectWorkspacePage({
         </div>
         <div className="flex flex-wrap gap-2">
           <Select value={filterPriority} onValueChange={setFilterPriority}>
-            <SelectTrigger className="w-[140px]">
-              <Filter className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+            <SelectTrigger className="w-full sm:w-[150px]">
+              <Filter className="h-3.5 w-3.5 mr-1 text-muted-foreground shrink-0" />
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
             <SelectContent>
@@ -207,12 +189,12 @@ export default function ProjectWorkspacePage({
             </SelectContent>
           </Select>
           <Select value={filterCategory} onValueChange={setFilterCategory}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-full sm:w-[150px]">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All categories</SelectItem>
-              {TASK_CATEGORIES.map((c) => (
+              {TASK_CATEGORY_SUGGESTIONS.map((c) => (
                 <SelectItem key={c} value={c}>
                   {c}
                 </SelectItem>
@@ -222,88 +204,42 @@ export default function ProjectWorkspacePage({
         </div>
       </div>
 
-      {tasks.length === 0 ? (
-        <div className="glass-card rounded-xl">
-          <EmptyState
-            icon={ListTodo}
-            title="No tasks yet"
-            description="No tasks yet. Generate an execution plan with AI."
-            action={
-              <div className="flex flex-wrap justify-center gap-3">
-                <MagicGenerate
-                  projectId={project.id}
-                  projectTitle={project.title}
-                />
-                <Button
-                  variant="outline"
-                  onClick={() => setTaskDialogOpen(true)}
-                  className="gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add Task Manually
-                </Button>
-              </div>
-            }
-          />
-        </div>
-      ) : (
-        <KanbanBoard
-          tasks={tasks}
-          onMoveTask={moveTask}
-          onEditTask={(t) => {
-            setEditTask(t);
-            setTaskDialogOpen(true);
-          }}
-          onDeleteTask={(t) => setDeleteTaskTarget(t)}
-          searchQuery={searchQuery}
-          filterPriority={filterPriority}
-          filterCategory={filterCategory}
-        />
-      )}
-
-      <TaskFormDialog
-        open={taskDialogOpen}
-        onOpenChange={(o) => {
-          setTaskDialogOpen(o);
-          if (!o) setEditTask(null);
-        }}
-        task={editTask ?? undefined}
-        mode={editTask ? "edit" : "create"}
-        onSubmit={(data) => {
-          if (editTask) {
-            updateTask(editTask.id, data);
-            toast({ title: "Task updated", variant: "success" });
-          } else {
-            createTask(project.id, data);
-            toast({ title: "Task created", variant: "success" });
-          }
-          setEditTask(null);
-        }}
+      <KanbanBoard
+        tasks={tasks}
+        onMoveTask={moveTask}
+        onAddTask={taskCrud.openCreate}
+        onEditTask={taskCrud.openEdit}
+        onDeleteTask={taskCrud.openDelete}
+        searchQuery={searchQuery}
+        filterPriority={filterPriority}
+        filterCategory={filterCategory}
       />
 
-      <DeleteTaskDialog
-        open={!!deleteTaskTarget}
-        onOpenChange={(o) => !o && setDeleteTaskTarget(null)}
-        taskTitle={deleteTaskTarget?.title ?? ""}
-        onConfirm={() => {
-          if (deleteTaskTarget) {
-            deleteTask(deleteTaskTarget.id);
-            toast({ title: "Task deleted", variant: "success" });
-            setDeleteTaskTarget(null);
-          }
-        }}
+      <TaskCrudModals
+        createOpen={taskCrud.createOpen}
+        onCreateOpenChange={taskCrud.setCreateOpen}
+        defaultStatus={taskCrud.defaultStatus}
+        editTask={taskCrud.editTask}
+        onEditClear={() => taskCrud.setEditTask(null)}
+        deleteTarget={taskCrud.deleteTarget}
+        onDeleteOpenChange={(open) => !open && taskCrud.setDeleteTarget(null)}
+        onCreate={taskCrud.handleCreate}
+        onUpdate={taskCrud.handleUpdate}
+        onDeleteConfirm={taskCrud.handleDeleteConfirm}
       />
 
       <ProjectCrudModals
-        createOpen={crud.createOpen}
-        onCreateOpenChange={crud.setCreateOpen}
-        editProject={crud.editProject}
-        onEditOpenChange={(open) => !open && crud.setEditProject(null)}
-        deleteTarget={crud.deleteTarget}
-        onDeleteOpenChange={(open) => !open && crud.setDeleteTarget(null)}
-        onCreate={crud.handleCreate}
-        onUpdate={crud.handleUpdate}
-        onDeleteConfirm={crud.handleDeleteConfirm}
+        createOpen={projectCrud.createOpen}
+        onCreateOpenChange={projectCrud.setCreateOpen}
+        editProject={projectCrud.editProject}
+        onEditOpenChange={(open) => !open && projectCrud.setEditProject(null)}
+        deleteTarget={projectCrud.deleteTarget}
+        onDeleteOpenChange={(open) =>
+          !open && projectCrud.setDeleteTarget(null)
+        }
+        onCreate={projectCrud.handleCreate}
+        onUpdate={projectCrud.handleUpdate}
+        onDeleteConfirm={projectCrud.handleDeleteConfirm}
       />
     </div>
   );

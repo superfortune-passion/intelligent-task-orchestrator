@@ -2,7 +2,15 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Calendar, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import {
+  GripVertical,
+  Calendar,
+  MessageCircle,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,25 +21,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDueDate } from "@/lib/date";
-import type { Task, TaskCategory, TaskPriority } from "@/types";
+import {
+  getCategoryBadgeVariant,
+  getPriorityBadgeVariant,
+} from "@/lib/task-badges";
+import type { Task } from "@/types/task";
 import { cn } from "@/lib/utils";
-
-const categoryVariant: Record<TaskCategory, "research" | "planning" | "marketing" | "operations" | "review" | "design" | "development" | "general"> = {
-  Research: "research",
-  Planning: "planning",
-  Marketing: "marketing",
-  Operations: "operations",
-  Review: "review",
-  Design: "design",
-  Development: "development",
-  General: "general",
-};
 
 interface TaskCardProps {
   task: Task;
   onEdit: () => void;
   onDelete: () => void;
   isDragging?: boolean;
+}
+
+function assigneeInitials(taskId: string): string {
+  const code = taskId.charCodeAt(0) + taskId.charCodeAt(taskId.length - 1);
+  const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+  return letters[code % letters.length] + letters[(code * 3) % letters.length];
 }
 
 export function TaskCard({ task, onEdit, onDelete, isDragging }: TaskCardProps) {
@@ -46,7 +53,7 @@ export function TaskCard({ task, onEdit, onDelete, isDragging }: TaskCardProps) 
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition ?? "transform 200ms ease, box-shadow 200ms ease",
   };
 
   const dragging = isDragging || isSortableDragging;
@@ -57,8 +64,10 @@ export function TaskCard({ task, onEdit, onDelete, isDragging }: TaskCardProps) 
       style={style}
       className={cn(
         "glass-card rounded-lg p-3.5 group touch-manipulation",
-        dragging && "opacity-50 shadow-2xl ring-2 ring-indigo-500/40 scale-[1.02]",
-        !dragging && "glass-card-hover"
+        dragging &&
+          "opacity-90 shadow-2xl ring-2 ring-indigo-500/50 scale-[1.02] z-50",
+        !dragging &&
+          "glass-card-hover hover:shadow-lg hover:shadow-indigo-500/10"
       )}
     >
       <div className="flex items-start gap-2">
@@ -73,7 +82,7 @@ export function TaskCard({ task, onEdit, onDelete, isDragging }: TaskCardProps) 
         </button>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-medium text-foreground line-clamp-2 break-words">
+            <p className="text-sm font-semibold text-foreground line-clamp-2 break-words leading-snug">
               {task.title}
             </p>
             <DropdownMenu>
@@ -81,7 +90,7 @@ export function TaskCard({ task, onEdit, onDelete, isDragging }: TaskCardProps) 
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100"
+                  className="h-7 w-7 shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
                 >
                   <MoreHorizontal className="h-3.5 w-3.5" />
                 </Button>
@@ -102,25 +111,50 @@ export function TaskCard({ task, onEdit, onDelete, isDragging }: TaskCardProps) 
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          {task.description && (
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-2 break-words">
+
+          {task.description ? (
+            <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 break-words leading-relaxed">
               {task.description}
             </p>
-          )}
+          ) : null}
+
           <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-            <Badge variant={categoryVariant[task.category]}>
+            <Badge variant={getCategoryBadgeVariant(task.category)}>
               {task.category}
             </Badge>
-            <Badge variant={task.priority as TaskPriority}>
+            <Badge variant={getPriorityBadgeVariant(task.priority)}>
               {task.priority}
             </Badge>
           </div>
-          {task.dueDate && (
-            <div className="flex items-center gap-1 mt-2 text-[11px] text-muted-foreground">
-              <Calendar className="h-3 w-3" />
-              {formatDueDate(task.dueDate)}
+
+          <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-border/40">
+            <div className="flex items-center gap-3 min-w-0">
+              {task.dueDate ? (
+                <div className="flex items-center gap-1 text-[11px] text-muted-foreground shrink-0">
+                  <Calendar className="h-3 w-3" aria-hidden />
+                  <span>{formatDueDate(task.dueDate)}</span>
+                </div>
+              ) : (
+                <span className="text-[11px] text-muted-foreground/60">
+                  No due date
+                </span>
+              )}
+              <button
+                type="button"
+                className="flex items-center gap-0.5 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                aria-label="Comments (coming soon)"
+                tabIndex={-1}
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                <span className="text-[10px]">0</span>
+              </button>
             </div>
-          )}
+            <Avatar className="h-6 w-6 shrink-0 ring-1 ring-border/60">
+              <AvatarFallback className="text-[9px] bg-indigo-500/25 text-indigo-200">
+                {assigneeInitials(task.id)}
+              </AvatarFallback>
+            </Avatar>
+          </div>
         </div>
       </div>
     </div>

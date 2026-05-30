@@ -6,14 +6,10 @@ import {
   createProjectEntity,
   updateProjectEntity,
 } from "@/services/projects";
-import type {
-  AppState,
-  Task,
-  TaskFormData,
-  TaskStatus,
-} from "@/types";
+import { createTaskEntity, updateTaskEntity } from "@/services/tasks";
+import type { AppState } from "@/types";
 import type { ProjectFormData } from "@/types/project";
-import { generateId } from "@/lib/id";
+import type { Task, TaskFormData, TaskStatus } from "@/types/task";
 
 export function useAppStore() {
   const [state, setState] = useState<AppState>({ projects: [], tasks: [] });
@@ -64,25 +60,12 @@ export function useAppStore() {
 
   const createTask = useCallback(
     (projectId: string, data: TaskFormData) => {
-      const now = new Date().toISOString();
-      const status = data.status ?? "todo";
+      const status = data.status ?? "To Do";
       const maxOrder = state.tasks
         .filter((t) => t.projectId === projectId && t.status === status)
         .reduce((max, t) => Math.max(max, t.order), -1);
 
-      const task: Task = {
-        id: generateId(),
-        projectId,
-        title: data.title.trim(),
-        description: data.description.trim(),
-        category: data.category,
-        priority: data.priority,
-        status,
-        dueDate: data.dueDate,
-        createdAt: now,
-        updatedAt: now,
-        order: maxOrder + 1,
-      };
+      const task = createTaskEntity(projectId, { ...data, status }, maxOrder + 1);
       setState((prev) => ({ ...prev, tasks: [...prev.tasks, task] }));
       return task;
     },
@@ -90,28 +73,19 @@ export function useAppStore() {
   );
 
   const createTasksBulk = useCallback(
-    (
-      projectId: string,
-      items: Omit<TaskFormData, "status">[]
-    ) => {
-      const now = new Date().toISOString();
+    (projectId: string, items: Omit<TaskFormData, "status">[]) => {
+      const status: TaskStatus = "To Do";
       const existingMax = state.tasks
-        .filter((t) => t.projectId === projectId && t.status === "todo")
+        .filter((t) => t.projectId === projectId && t.status === status)
         .reduce((max, t) => Math.max(max, t.order), -1);
 
-      const newTasks: Task[] = items.map((data, index) => ({
-        id: generateId(),
-        projectId,
-        title: data.title.trim(),
-        description: data.description.trim(),
-        category: data.category,
-        priority: data.priority,
-        status: "todo" as TaskStatus,
-        dueDate: data.dueDate ?? null,
-        createdAt: now,
-        updatedAt: now,
-        order: existingMax + 1 + index,
-      }));
+      const newTasks: Task[] = items.map((data, index) =>
+        createTaskEntity(
+          projectId,
+          { ...data, status },
+          existingMax + 1 + index
+        )
+      );
 
       setState((prev) => ({
         ...prev,
@@ -122,19 +96,11 @@ export function useAppStore() {
     [state.tasks]
   );
 
-  const updateTask = useCallback((id: string, data: Partial<TaskFormData>) => {
+  const updateTask = useCallback((id: string, data: TaskFormData) => {
     setState((prev) => ({
       ...prev,
       tasks: prev.tasks.map((t) =>
-        t.id === id
-          ? {
-              ...t,
-              ...data,
-              title: data.title?.trim() ?? t.title,
-              description: data.description?.trim() ?? t.description,
-              updatedAt: new Date().toISOString(),
-            }
-          : t
+        t.id === id ? updateTaskEntity(t, data) : t
       ),
     }));
   }, []);
@@ -164,11 +130,10 @@ export function useAppStore() {
           if (
             t.projectId === task.projectId &&
             t.status === newStatus &&
-            t.id !== taskId
+            t.id !== taskId &&
+            t.order >= newOrder
           ) {
-            if (t.order >= newOrder) {
-              return { ...t, order: t.order + 1 };
-            }
+            return { ...t, order: t.order + 1 };
           }
           return t;
         });
@@ -190,9 +155,11 @@ export function useAppStore() {
   const stats = useMemo(() => {
     const totalProjects = state.projects.length;
     const totalTasks = state.tasks.length;
-    const completedTasks = state.tasks.filter((t) => t.status === "done").length;
+    const completedTasks = state.tasks.filter(
+      (t) => t.status === "Done"
+    ).length;
     const inProgressTasks = state.tasks.filter(
-      (t) => t.status === "in_progress"
+      (t) => t.status === "In Progress"
     ).length;
     const completionRate =
       totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;

@@ -1,7 +1,5 @@
-import type { TaskCategory } from "@/types";
-
 export interface GeneratedSubtask {
-  category: TaskCategory;
+  category: string;
   title: string;
   description: string;
 }
@@ -12,7 +10,7 @@ export type GeneratePlanResult =
 
 const CATEGORY_TEMPLATES: Record<
   string,
-  { category: TaskCategory; title: string; description: string }[]
+  { category: string; title: string; description: string }[]
 > = {
   launch: [
     {

@@ -1,5 +1,6 @@
 import { STORAGE_KEY } from "@/lib/constants";
 import { normalizeProject } from "@/services/projects";
+import { normalizeTask } from "@/services/tasks";
 import type { AppState } from "@/types";
 
 const DEFAULT_STATE: AppState = {
@@ -12,7 +13,9 @@ function normalizeState(parsed: AppState): AppState {
     projects: parsed.projects
       .map((p) => normalizeProject(p))
       .filter((p): p is NonNullable<typeof p> => p !== null),
-    tasks: Array.isArray(parsed.tasks) ? parsed.tasks : [],
+    tasks: parsed.tasks
+      .map((t) => normalizeTask(t))
+      .filter((t): t is NonNullable<typeof t> => t !== null),
   };
 }
 
@@ -34,6 +37,6 @@ export function saveState(state: AppState): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {
-    // Quota exceeded or private mode — fail silently
+    // Quota exceeded or private mode
   }
 }

@@ -1,60 +1,31 @@
-export type TaskStatus = "todo" | "in_progress" | "review" | "done";
+export type {
+  Task,
+  TaskFormData,
+  TaskPriority,
+  TaskStatus,
+} from "@/types/task";
 
-export type TaskPriority = "low" | "medium" | "high" | "urgent";
-
-export type TaskCategory =
-  | "Research"
-  | "Planning"
-  | "Marketing"
-  | "Operations"
-  | "Review"
-  | "Design"
-  | "Development"
-  | "General";
-
-export interface Task {
-  id: string;
-  projectId: string;
-  title: string;
-  description: string;
-  category: TaskCategory;
-  priority: TaskPriority;
-  status: TaskStatus;
-  dueDate: string | null;
-  createdAt: string;
-  updatedAt: string;
-  order: number;
-}
+export {
+  TASK_STATUSES,
+  TASK_PRIORITIES,
+  TASK_CATEGORY_SUGGESTIONS,
+  STATUS_COLUMN_SLUG,
+  statusFromColumnId,
+  columnIdFromStatus,
+} from "@/types/task";
 
 export type { Project, ProjectFormData } from "@/types/project";
 
 import type { Project } from "@/types/project";
+import type { Task } from "@/types/task";
 
 export interface AppState {
   projects: Project[];
   tasks: Task[];
 }
 
-export type TaskFormData = Pick<
-  Task,
-  "title" | "description" | "category" | "priority" | "status" | "dueDate"
->;
-
-export const TASK_STATUSES: { id: TaskStatus; label: string }[] = [
-  { id: "todo", label: "To Do" },
-  { id: "in_progress", label: "In Progress" },
-  { id: "review", label: "Review" },
-  { id: "done", label: "Done" },
-];
-
-export const TASK_PRIORITIES: { id: TaskPriority; label: string }[] = [
-  { id: "low", label: "Low" },
-  { id: "medium", label: "Medium" },
-  { id: "high", label: "High" },
-  { id: "urgent", label: "Urgent" },
-];
-
-export const TASK_CATEGORIES: TaskCategory[] = [
+/** @deprecated Use TASK_CATEGORY_SUGGESTIONS */
+export const TASK_CATEGORIES = [
   "Research",
   "Planning",
   "Marketing",
@@ -63,4 +34,4 @@ export const TASK_CATEGORIES: TaskCategory[] = [
   "Design",
   "Development",
   "General",
-];
+] as const;

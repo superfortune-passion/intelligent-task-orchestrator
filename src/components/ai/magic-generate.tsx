@@ -40,7 +40,7 @@ export function MagicGenerate({ projectId, projectTitle }: MagicGenerateProps) {
           title: t.title,
           description: t.description,
           category: t.category,
-          priority: "medium" as const,
+          priority: "Medium" as const,
           dueDate: null,
         }))
       );
