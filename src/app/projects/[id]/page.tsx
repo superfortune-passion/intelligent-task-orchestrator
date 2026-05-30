@@ -4,7 +4,6 @@ import { use, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
-  Plus,
   Search,
   Filter,
   Pencil,
@@ -13,6 +12,7 @@ import {
 import { useApp } from "@/components/providers/app-provider";
 import { useProjectCrud } from "@/hooks/use-project-crud";
 import { useTaskCrud } from "@/hooks/use-task-crud";
+import { useMagicGenerate } from "@/hooks/use-magic-generate";
 import { KanbanBoard } from "@/components/kanban/kanban-board";
 import { TaskCrudModals } from "@/components/tasks/task-crud-modals";
 import { ProjectCrudModals } from "@/components/projects/project-crud-modals";
@@ -47,6 +47,7 @@ export default function ProjectWorkspacePage({
   const project = getProject(id);
   const accent = project ? getProjectAccentColor(project.id) : "#6366f1";
   const tasks = getTasksByProject(id);
+  const magic = useMagicGenerate(id, project?.title ?? "");
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPriority, setFilterPriority] = useState("all");
@@ -151,15 +152,6 @@ export default function ProjectWorkspacePage({
               </div>
             </div>
           </div>
-
-          <Button
-            variant="default"
-            onClick={() => taskCrud.openCreate("To Do")}
-            className="gap-2 shrink-0 w-full sm:w-auto justify-center"
-          >
-            <Plus className="h-4 w-4" />
-            Add Task
-          </Button>
         </div>
       </div>
 
@@ -171,10 +163,15 @@ export default function ProjectWorkspacePage({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
+            disabled={magic.isGenerating}
           />
         </div>
         <div className="flex flex-wrap gap-2">
-          <Select value={filterPriority} onValueChange={setFilterPriority}>
+          <Select
+            value={filterPriority}
+            onValueChange={setFilterPriority}
+            disabled={magic.isGenerating}
+          >
             <SelectTrigger className="w-full sm:w-[150px]">
               <Filter className="h-3.5 w-3.5 mr-1 text-muted-foreground shrink-0" />
               <SelectValue placeholder="Priority" />
@@ -188,7 +185,11 @@ export default function ProjectWorkspacePage({
               ))}
             </SelectContent>
           </Select>
-          <Select value={filterCategory} onValueChange={setFilterCategory}>
+          <Select
+            value={filterCategory}
+            onValueChange={setFilterCategory}
+            disabled={magic.isGenerating}
+          >
             <SelectTrigger className="w-full sm:w-[150px]">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
@@ -213,6 +214,11 @@ export default function ProjectWorkspacePage({
         searchQuery={searchQuery}
         filterPriority={filterPriority}
         filterCategory={filterCategory}
+        isGenerating={magic.isGenerating}
+        newTaskIds={magic.newTaskIds}
+        magicState={magic.state}
+        magicError={magic.errorMessage}
+        onMagicGenerate={magic.generate}
       />
 
       <TaskCrudModals

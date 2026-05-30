@@ -33,6 +33,7 @@ interface TaskCardProps {
   onEdit: () => void;
   onDelete: () => void;
   isDragging?: boolean;
+  isNew?: boolean;
 }
 
 function assigneeInitials(taskId: string): string {
@@ -41,7 +42,13 @@ function assigneeInitials(taskId: string): string {
   return letters[code % letters.length] + letters[(code * 3) % letters.length];
 }
 
-export function TaskCard({ task, onEdit, onDelete, isDragging }: TaskCardProps) {
+export function TaskCard({
+  task,
+  onEdit,
+  onDelete,
+  isDragging,
+  isNew,
+}: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -67,7 +74,8 @@ export function TaskCard({ task, onEdit, onDelete, isDragging }: TaskCardProps) 
         dragging &&
           "opacity-90 shadow-2xl ring-2 ring-indigo-500/50 scale-[1.02] z-50",
         !dragging &&
-          "glass-card-hover hover:shadow-lg hover:shadow-indigo-500/10"
+          "glass-card-hover hover:shadow-lg hover:shadow-indigo-500/10",
+        isNew && "task-enter ring-1 ring-indigo-500/30"
       )}
     >
       <div className="flex items-start gap-2">

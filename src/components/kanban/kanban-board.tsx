@@ -23,8 +23,10 @@ import {
   type Task,
   type TaskStatus,
 } from "@/types/task";
+import { KanbanBoardHeader } from "@/components/kanban/kanban-board-header";
 import { KanbanColumn } from "@/components/kanban/kanban-column";
 import { TaskCard } from "@/components/tasks/task-card";
+import type { MagicGenerateState } from "@/hooks/use-magic-generate";
 
 interface KanbanBoardProps {
   tasks: Task[];
@@ -35,7 +37,11 @@ interface KanbanBoardProps {
   searchQuery: string;
   filterPriority: string;
   filterCategory: string;
-  isLoading?: boolean;
+  isGenerating?: boolean;
+  newTaskIds?: string[];
+  magicState: MagicGenerateState;
+  magicError: string;
+  onMagicGenerate: () => void;
 }
 
 export function KanbanBoard({
@@ -47,7 +53,11 @@ export function KanbanBoard({
   searchQuery,
   filterPriority,
   filterCategory,
-  isLoading = false,
+  isGenerating = false,
+  newTaskIds = [],
+  magicState,
+  magicError,
+  onMagicGenerate,
 }: KanbanBoardProps) {
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
@@ -89,12 +99,14 @@ export function KanbanBoard({
   );
 
   const handleDragStart = (event: DragStartEvent) => {
+    if (isGenerating) return;
     const task = tasks.find((t) => t.id === event.active.id);
     if (task) setActiveTask(task);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     setActiveTask(null);
+    if (isGenerating) return;
     const { active, over } = event;
     if (!over) return;
 
@@ -134,42 +146,68 @@ export function KanbanBoard({
   };
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 pb-6">
-        {TASK_STATUSES.map((col) => (
-          <SortableContext
-            key={col.id}
-            items={tasksByStatus[col.id].map((t) => t.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <KanbanColumn
-              title={col.label}
-              status={col.id}
-              count={tasksByStatus[col.id].length}
-              tasks={tasksByStatus[col.id]}
-              isLoading={isLoading}
-              onAddTask={onAddTask}
-              onEditTask={onEditTask}
-              onDeleteTask={onDeleteTask}
+    <div>
+      <KanbanBoardHeader
+        taskCount={tasks.length}
+        magicState={magicState}
+        magicError={magicError}
+        onMagicGenerate={onMagicGenerate}
+        onAddTask={() => onAddTask("To Do")}
+        isGenerating={isGenerating}
+      />
+
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 pb-6">
+          {TASK_STATUSES.map((col) => {
+            const showSkeleton = isGenerating && col.id === "To Do";
+            return (
+              <SortableContext
+                key={col.id}
+                items={tasksByStatus[col.id].map((t) => t.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <KanbanColumn
+                  title={col.label}
+                  status={col.id}
+                  count={
+                    showSkeleton
+                      ? tasksByStatus[col.id].length + 5
+                      : tasksByStatus[col.id].length
+                  }
+                  tasks={tasksByStatus[col.id]}
+                  isLoading={showSkeleton}
+                  skeletonCount={5}
+                  newTaskIds={newTaskIds}
+                  onAddTask={onAddTask}
+                  onEditTask={onEditTask}
+                  onDeleteTask={onDeleteTask}
+                  addTaskDisabled={isGenerating}
+                />
+              </SortableContext>
+            );
+          })}
+        </div>
+        <DragOverlay
+          dropAnimation={{
+            duration: 250,
+            easing: "cubic-bezier(0.2, 0, 0, 1)",
+          }}
+        >
+          {activeTask ? (
+            <TaskCard
+              task={activeTask}
+              onEdit={() => {}}
+              onDelete={() => {}}
+              isDragging
             />
-          </SortableContext>
-        ))}
-      </div>
-      <DragOverlay dropAnimation={{ duration: 250, easing: "cubic-bezier(0.2, 0, 0, 1)" }}>
-        {activeTask ? (
-          <TaskCard
-            task={activeTask}
-            onEdit={() => {}}
-            onDelete={() => {}}
-            isDragging
-          />
-        ) : null}
-      </DragOverlay>
-    </DndContext>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </div>
   );
 }

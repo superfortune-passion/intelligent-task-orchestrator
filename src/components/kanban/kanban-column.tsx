@@ -31,9 +31,11 @@ interface KanbanColumnProps {
   tasks: Task[];
   isLoading?: boolean;
   skeletonCount?: number;
+  newTaskIds?: string[];
   onAddTask: (status: TaskStatus) => void;
   onEditTask: (task: Task) => void;
   onDeleteTask: (task: Task) => void;
+  addTaskDisabled?: boolean;
 }
 
 export function KanbanColumn({
@@ -43,9 +45,11 @@ export function KanbanColumn({
   tasks,
   isLoading = false,
   skeletonCount = 2,
+  newTaskIds = [],
   onAddTask,
   onEditTask,
   onDeleteTask,
+  addTaskDisabled = false,
 }: KanbanColumnProps) {
   const columnId = columnIdFromStatus(status);
   const { setNodeRef, isOver } = useDroppable({ id: columnId });
@@ -68,21 +72,21 @@ export function KanbanColumn({
       </div>
 
       <div className="flex flex-col gap-2.5 p-3 flex-1 min-h-[180px]">
-        {isLoading ? (
+        {tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            isNew={newTaskIds.includes(task.id)}
+            onEdit={() => onEditTask(task)}
+            onDelete={() => onDeleteTask(task)}
+          />
+        ))}
+        {isLoading &&
           Array.from({ length: skeletonCount }).map((_, i) => (
-            <TaskCardSkeleton key={i} />
-          ))
-        ) : tasks.length === 0 ? (
+            <TaskCardSkeleton key={`skeleton-${i}`} />
+          ))}
+        {!isLoading && tasks.length === 0 && (
           <ColumnEmptyState columnTitle={title} />
-        ) : (
-          tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onEdit={() => onEditTask(task)}
-              onDelete={() => onDeleteTask(task)}
-            />
-          ))
         )}
       </div>
 
@@ -93,6 +97,7 @@ export function KanbanColumn({
           size="sm"
           className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-dashed border-border/50"
           onClick={() => onAddTask(status)}
+          disabled={addTaskDisabled}
         >
           <Plus className="h-4 w-4 shrink-0" />
           Add Task
