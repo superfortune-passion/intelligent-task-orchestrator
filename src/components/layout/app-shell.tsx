@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Toaster } from "@/components/layout/toaster";
 import { Button } from "@/components/ui/button";
 import { AppProvider } from "@/components/providers/app-provider";
+import { ChunkLoadRecovery } from "@/components/dev/chunk-load-recovery";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -13,6 +14,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <AppProvider>
+      <ChunkLoadRecovery />
       <div className="app-gradient min-h-screen">
         <Sidebar
           collapsed={sidebarCollapsed}

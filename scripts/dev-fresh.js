@@ -6,8 +6,14 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.join(__dirname, "..");
-const nextDir = path.join(root, ".next");
-const webpackCache = path.join(root, "node_modules", ".cache");
+const cacheDirs = [
+  path.join(root, ".next"),
+  path.join(root, "node_modules", ".cache"),
+];
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function killPort(port) {
   try {
@@ -42,27 +48,45 @@ function killPort(port) {
 function rmDir(dir) {
   if (!fs.existsSync(dir)) return;
   try {
-    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 3 });
+    fs.rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
     console.log(`Removed ${path.relative(root, dir)}`);
   } catch (err) {
     console.warn(`Could not remove ${dir}:`, err.message);
   }
 }
 
-// Stop dev server BEFORE deleting cache (Windows file locks)
-for (const port of [3000, 3001, 3002, 3003, 3004]) {
-  killPort(port);
+async function main() {
+  for (const port of [3000, 3001, 3002, 3003, 3004]) {
+    killPort(port);
+  }
+
+  // Let Windows release file locks on .next
+  await sleep(800);
+
+  for (const dir of cacheDirs) {
+    rmDir(dir);
+  }
+
+  const useWebpack = process.argv.includes("--webpack");
+  const args = useWebpack
+    ? ["next", "dev", "-p", "3000"]
+    : ["next", "dev", "--turbopack", "-p", "3000"];
+
+  console.log(
+    `Starting dev server on http://localhost:3000 (${useWebpack ? "webpack" : "turbopack"}) ...`
+  );
+
+  const child = spawn("npx", args, {
+    cwd: root,
+    stdio: "inherit",
+    shell: true,
+    env: { ...process.env, NODE_ENV: "development" },
+  });
+
+  child.on("exit", (code) => process.exit(code ?? 0));
 }
 
-rmDir(nextDir);
-rmDir(webpackCache);
-
-console.log("Starting dev server on http://localhost:3000 ...");
-
-const child = spawn("npx", ["next", "dev", "-p", "3000"], {
-  cwd: root,
-  stdio: "inherit",
-  shell: true,
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
 });
-
-child.on("exit", (code) => process.exit(code ?? 0));

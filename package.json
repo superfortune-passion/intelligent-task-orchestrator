@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "node scripts/dev-fresh.js",
+    "dev:quick": "next dev --turbopack -p 3000",
+    "dev:webpack": "node scripts/dev-fresh.js --webpack",
     "dev:fresh": "node scripts/dev-fresh.js",
     "dev:turbo": "next dev --turbopack -p 3000",
     "clean": "node -e \"const fs=require('fs');const p=['.next','node_modules/.cache'];for(const d of p){try{fs.rmSync(d,{recursive:true,force:true})}catch(e){}}\"",
