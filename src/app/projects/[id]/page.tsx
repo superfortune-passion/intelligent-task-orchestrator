@@ -18,7 +18,8 @@ import { TaskCrudModals } from "@/components/tasks/task-crud-modals";
 import { ProjectCrudModals } from "@/components/projects/project-crud-modals";
 import { getProjectAccentColor } from "@/lib/project-color";
 import { EmptyState } from "@/components/shared/empty-state";
-import { TeamAvatars } from "@/components/shared/team-avatars";
+import { ProjectHeaderMetrics } from "@/components/projects/project-header-metrics";
+import { getProjectMetrics } from "@/lib/project-metrics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -52,6 +53,13 @@ export default function ProjectWorkspacePage({
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPriority, setFilterPriority] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
+
+  const metrics = useMemo(() => {
+    if (!project) {
+      return { totalTasks: 0, completedTasks: 0, lastUpdatedAt: null };
+    }
+    return getProjectMetrics(project, tasks);
+  }, [project, tasks]);
 
   const filteredCount = useMemo(() => {
     return tasks.filter((t) => {
@@ -145,14 +153,16 @@ export default function ProjectWorkspacePage({
                   {project.description}
                 </p>
               ) : null}
-              <div className="flex items-center gap-4 mt-3 flex-wrap">
-                <TeamAvatars />
-                <span className="text-xs text-muted-foreground">
-                  {tasks.length} task{tasks.length !== 1 ? "s" : ""}
-                  {filteredCount !== tasks.length &&
-                    ` · ${filteredCount} shown`}
-                </span>
-              </div>
+              <ProjectHeaderMetrics
+                totalTasks={metrics.totalTasks}
+                completedTasks={metrics.completedTasks}
+                lastUpdatedAt={metrics.lastUpdatedAt}
+              />
+              {filteredCount !== tasks.length && tasks.length > 0 ? (
+                <p className="text-xs text-muted-foreground mt-2">
+                  {filteredCount} of {tasks.length} tasks match filters
+                </p>
+              ) : null}
             </div>
           </div>
         </div>
