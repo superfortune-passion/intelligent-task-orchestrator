@@ -12,7 +12,6 @@ Intelligent Task Orchestrator is a client-first execution planning workspace for
 |-------------|-----|
 | **Production (Vercel)** | https://intelligent-task-orchestrator.vercel.app/ |
 
-> **Before submission:** Run `npx vercel --prod` and add your live URL above.
 
 ---
 
