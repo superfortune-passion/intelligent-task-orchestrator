@@ -168,8 +168,8 @@ git commit -m "fix: preserve tasks when dragging across Kanban columns"
 - [x] Mobile Kanban: 1 column, no horizontal overflow
 - [x] AI errors: toast + retry, app remains usable
 - [x] `AI_WORKFLOW.md` documents prompt, bug fix, and efficiency
-- [ ] **Live deployment** on Vercel or Netlify (add URL to README)
-- [ ] **Screenshots** under `docs/screenshots/` (optional but recommended)
+- [ ] **Live deployment** on Vercel or Netlify — `npx vercel --prod` (add URL to README)
+- [ ] **Screenshots** under `docs/screenshots/` (dashboard.png, kanban.png)
 
 ---
 

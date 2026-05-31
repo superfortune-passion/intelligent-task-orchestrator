@@ -10,10 +10,10 @@ Intelligent Task Orchestrator is a client-first execution planning workspace for
 
 | Environment | URL |
 |-------------|-----|
-| **Production (Vercel)** | `https://your-deployment.vercel.app` — *replace after deploy* |
+| **Production (Vercel)** | Deploy with `npx vercel --prod`, then paste your URL here |
 | **Local** | [http://localhost:3000](http://localhost:3000) |
 
-> **Submission note:** Deploy to [Vercel](https://vercel.com) (or Netlify), then paste your public URL above before hand-in.
+> **Before submission:** Run `npx vercel --prod`, add your live URL above, and capture screenshots into `docs/screenshots/`.
 
 ---
 
@@ -59,7 +59,7 @@ The app mirrors how modern teams move from intent to execution: define a **proje
 | Drag and drop | [@dnd-kit](https://dndkit.com) (core, sortable, utilities) |
 | Icons | [Lucide React](https://lucide.dev) |
 | Persistence | Browser `localStorage` (`ito-app-state-v1`) |
-| AI (optional) | Next.js Route Handler + template/heuristic plan generation |
+| AI Magic Generate | Next.js Route Handler — contextual template engine (5 categorized subtasks); fails gracefully with toast + retry |
 
 ---
 
