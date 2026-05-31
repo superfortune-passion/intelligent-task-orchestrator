@@ -44,7 +44,9 @@ export function TaskCrudModals({
       />
       <DeleteTaskDialog
         open={!!deleteTarget}
-        onOpenChange={(open) => !open && onDeleteOpenChange(false)}
+        onOpenChange={(open) => {
+          if (!open) onDeleteOpenChange(false);
+        }}
         taskTitle={deleteTarget?.title ?? ""}
         onConfirm={onDeleteConfirm}
       />

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import {
   Dialog,
@@ -24,9 +25,24 @@ export function DeleteTaskDialog({
   taskTitle,
   onConfirm,
 }: DeleteTaskDialogProps) {
+  const [isConfirming, setIsConfirming] = useState(false);
+
+  const handleOpenChange = (next: boolean) => {
+    if (!next) setIsConfirming(false);
+    onOpenChange(next);
+  };
+
+  const handleConfirm = () => {
+    if (isConfirming) return;
+    setIsConfirming(true);
+    onConfirm();
+    setIsConfirming(false);
+    onOpenChange(false);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-red-500/20 sm:max-w-md">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="border-red-500/25 bg-card/95 backdrop-blur-xl shadow-2xl shadow-red-950/30 ring-1 ring-red-500/15 sm:max-w-md">
         <DialogHeader>
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-500/15 border border-red-500/25">
@@ -50,15 +66,19 @@ export function DeleteTaskDialog({
           </div>
         </DialogHeader>
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            disabled={isConfirming}
+            className="transition-colors duration-200"
+          >
             Cancel
           </Button>
           <Button
             variant="destructive"
-            onClick={() => {
-              onConfirm();
-              onOpenChange(false);
-            }}
+            onClick={handleConfirm}
+            disabled={isConfirming}
+            className="transition-all duration-200 shadow-lg shadow-red-950/40 hover:shadow-red-900/50"
           >
             Delete task
           </Button>

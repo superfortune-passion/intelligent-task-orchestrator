@@ -44,7 +44,10 @@ export function TaskCardActions({
         variant="ghost"
         size="icon"
         className="h-7 w-7 text-muted-foreground hover:text-indigo-300 hover:bg-indigo-500/15"
-        onClick={onEdit}
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit();
+        }}
         aria-label="Edit task"
         title="Edit task"
       >
@@ -56,7 +59,10 @@ export function TaskCardActions({
         variant="ghost"
         size="icon"
         className="h-7 w-7 text-muted-foreground hover:text-red-400 hover:bg-red-500/15"
-        onClick={onDelete}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
         aria-label="Delete task"
         title="Delete task"
       >
@@ -84,14 +90,20 @@ export function TaskCardActions({
           </p>
           <DropdownMenuSeparator className="bg-border/50" />
           <DropdownMenuItem
-            onClick={onEdit}
+            onSelect={(e) => {
+              e.preventDefault();
+              onEdit();
+            }}
             className="gap-2 cursor-pointer focus:bg-indigo-500/15"
           >
             <Pencil className="h-4 w-4 text-indigo-400" />
             <span>Edit task</span>
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={onDelete}
+            onSelect={(e) => {
+              e.preventDefault();
+              onDelete();
+            }}
             className="gap-2 cursor-pointer text-red-400 focus:text-red-300 focus:bg-red-500/15"
           >
             <Trash2 className="h-4 w-4" />
