@@ -11,10 +11,14 @@ interface DashboardStatCardProps {
 }
 
 const accentStyles = {
-  indigo: "from-indigo-500/20 to-transparent border-indigo-500/20 text-indigo-400",
-  violet: "from-violet-500/20 to-transparent border-violet-500/20 text-violet-400",
-  teal: "from-teal-500/20 to-transparent border-teal-500/20 text-teal-400",
-  emerald: "from-emerald-500/20 to-transparent border-emerald-500/20 text-emerald-400",
+  indigo:
+    "from-zinc-100 to-transparent border-zinc-200/80 text-zinc-600 dark:from-indigo-500/20 dark:border-indigo-500/20 dark:text-indigo-400",
+  violet:
+    "from-zinc-100 to-transparent border-zinc-200/80 text-zinc-600 dark:from-violet-500/20 dark:border-violet-500/20 dark:text-violet-400",
+  teal:
+    "from-zinc-100 to-transparent border-zinc-200/80 text-teal-700 dark:from-teal-500/20 dark:border-teal-500/20 dark:text-teal-400",
+  emerald:
+    "from-zinc-100 to-transparent border-zinc-200/80 text-emerald-700 dark:from-emerald-500/20 dark:border-emerald-500/20 dark:text-emerald-400",
 };
 
 export function DashboardStatCard({

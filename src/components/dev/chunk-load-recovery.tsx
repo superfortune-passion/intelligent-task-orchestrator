@@ -4,14 +4,24 @@ import { useEffect } from "react";
 
 const RELOAD_KEY = "ito-chunk-recovery";
 
-function tailwindReady(): boolean {
+function utilitiesReady(): boolean {
   if (!document.body) return false;
-  const probe = document.createElement("div");
-  probe.className = "hidden";
-  probe.setAttribute("aria-hidden", "true");
-  document.body.appendChild(probe);
-  const ok = getComputedStyle(probe).display === "none";
-  probe.remove();
+  const cssLink = document.querySelector('link[href*="/_next/static/css"]');
+  if (!cssLink || !(cssLink as HTMLLinkElement).sheet) return false;
+
+  const hidden = document.createElement("div");
+  hidden.className = "hidden";
+  document.body.appendChild(hidden);
+  const hiddenOk = getComputedStyle(hidden).display === "none";
+  hidden.remove();
+  if (!hiddenOk) return false;
+
+  const layout = document.createElement("div");
+  layout.className = "flex fixed";
+  document.body.appendChild(layout);
+  const st = getComputedStyle(layout);
+  const ok = st.display === "flex" && st.position === "fixed";
+  layout.remove();
   return ok;
 }
 
@@ -69,7 +79,7 @@ export function ChunkLoadRecovery() {
         const hasShell = Boolean(document.querySelector("[data-ito-shell]"));
         if (!hasShell) return;
 
-        if (!tailwindReady()) {
+        if (!utilitiesReady()) {
           reloadOnce("tailwind inactive after hydration");
           return;
         }

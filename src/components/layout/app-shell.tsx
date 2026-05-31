@@ -10,6 +10,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { ChunkLoadRecovery } from "@/components/dev/chunk-load-recovery";
 import { StyleBootComplete } from "@/components/dev/style-boot-complete";
+import { ShellGate } from "@/components/layout/shell-gate";
 
 const SIDEBAR_KEY = "ito-sidebar-collapsed";
 
@@ -48,6 +49,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <AppProvider>
         <StyleBootComplete />
         <ChunkLoadRecovery />
+        <ShellGate>
         <div className="min-h-screen" data-ito-shell>
           <Sidebar
             collapsed={sidebarCollapsed}
@@ -80,6 +82,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <Toaster />
         </div>
+        </ShellGate>
       </AppProvider>
     </ThemeProvider>
   );

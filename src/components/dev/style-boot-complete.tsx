@@ -2,23 +2,34 @@
 
 import { useEffect } from "react";
 
-/** Ensures boot guard clears after React hydrates with Tailwind active */
+function utilitiesReady(): boolean {
+  if (!document.body) return false;
+  const cssLink = document.querySelector('link[href*="/_next/static/css"]');
+  if (!cssLink || !(cssLink as HTMLLinkElement).sheet) return false;
+
+  const hidden = document.createElement("div");
+  hidden.className = "hidden";
+  document.body.appendChild(hidden);
+  const hiddenOk = getComputedStyle(hidden).display === "none";
+  hidden.remove();
+  if (!hiddenOk) return false;
+
+  const layout = document.createElement("div");
+  layout.className = "flex fixed";
+  document.body.appendChild(layout);
+  const st = getComputedStyle(layout);
+  const ok = st.display === "flex" && st.position === "fixed";
+  layout.remove();
+  return ok;
+}
+
+/** Sync boot guard with React hydration — only clears when Tailwind layout works */
 export function StyleBootComplete() {
   useEffect(() => {
     const root = document.documentElement;
 
     const tryComplete = () => {
-      if (!document.body) return false;
-      const hasCss = Boolean(
-        document.querySelector('link[href*="/_next/static/css"]')
-      );
-      if (!hasCss) return false;
-      const probe = document.createElement("div");
-      probe.className = "hidden";
-      document.body.appendChild(probe);
-      const ready = getComputedStyle(probe).display === "none";
-      probe.remove();
-      if (!ready) return false;
+      if (!utilitiesReady()) return false;
       root.classList.remove("ito-boot-pending");
       root.classList.add("ito-styles-ready");
       sessionStorage.removeItem("ito-style-boot");
@@ -30,7 +41,7 @@ export function StyleBootComplete() {
 
     const id = window.setInterval(() => {
       if (tryComplete()) window.clearInterval(id);
-    }, 50);
+    }, 40);
 
     return () => window.clearInterval(id);
   }, []);

@@ -7,31 +7,32 @@
   :root {
     color-scheme: light;
     --radius: 0.625rem;
-    --background: #f8fafc;
-    --foreground: #0f172a;
+    --background: #f4f4f5;
+    --foreground: #1c1c1e;
     --field: #ffffff;
-    --field-foreground: #0f172a;
-    --card: rgba(255, 255, 255, 0.95);
-    --card-foreground: #0f172a;
+    --field-foreground: #1c1c1e;
+    --card: #ffffff;
+    --card-foreground: #1c1c1e;
     --popover: #ffffff;
-    --popover-foreground: #0f172a;
-    --primary: #4f46e5;
+    --popover-foreground: #1c1c1e;
+    --primary: #4f5d75;
     --primary-foreground: #ffffff;
-    --secondary: rgba(79, 70, 229, 0.1);
-    --secondary-foreground: #4338ca;
-    --muted: rgba(15, 23, 42, 0.06);
-    --muted-foreground: #64748b;
-    --accent: rgba(99, 102, 241, 0.12);
-    --accent-foreground: #4338ca;
-    --destructive: #dc2626;
-    --border: rgba(15, 23, 42, 0.1);
-    --input: rgba(15, 23, 42, 0.12);
-    --ring: #4f46e5;
-    --glass-from: rgba(255, 255, 255, 0.98);
-    --glass-to: rgba(255, 255, 255, 0.9);
-    --glass-border: rgba(15, 23, 42, 0.08);
-    --glass-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+    --secondary: rgba(79, 93, 117, 0.08);
+    --secondary-foreground: #3f4d63;
+    --muted: rgba(24, 24, 27, 0.04);
+    --muted-foreground: #6b6b70;
+    --accent: rgba(79, 93, 117, 0.1);
+    --accent-foreground: #3f4d63;
+    --destructive: #c53030;
+    --border: rgba(24, 24, 27, 0.09);
+    --input: rgba(24, 24, 27, 0.11);
+    --ring: #5c6b82;
+    --glass-from: #ffffff;
+    --glass-to: #fafafa;
+    --glass-border: rgba(24, 24, 27, 0.08);
+    --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
     --filter-hover-bg: #ffffff;
+    --nav-active-fg: #3f4d63;
   }
 
   .dark {
@@ -67,31 +68,32 @@
   .light {
     color-scheme: light;
     --radius: 0.625rem;
-    --background: #f1f5f9;
-    --foreground: #0f172a;
+    --background: #f4f4f5;
+    --foreground: #1c1c1e;
     --field: #ffffff;
-    --field-foreground: #0f172a;
-    --card: rgba(255, 255, 255, 0.92);
-    --card-foreground: #0f172a;
+    --field-foreground: #1c1c1e;
+    --card: #ffffff;
+    --card-foreground: #1c1c1e;
     --popover: #ffffff;
-    --popover-foreground: #0f172a;
-    --primary: #4f46e5;
+    --popover-foreground: #1c1c1e;
+    --primary: #4f5d75;
     --primary-foreground: #ffffff;
-    --secondary: rgba(79, 70, 229, 0.1);
-    --secondary-foreground: #4338ca;
-    --muted: rgba(15, 23, 42, 0.06);
-    --muted-foreground: #64748b;
-    --accent: rgba(99, 102, 241, 0.12);
-    --accent-foreground: #4338ca;
-    --destructive: #dc2626;
-    --border: rgba(15, 23, 42, 0.1);
-    --input: rgba(15, 23, 42, 0.12);
-    --ring: #4f46e5;
-    --glass-from: rgba(255, 255, 255, 0.95);
-    --glass-to: rgba(255, 255, 255, 0.85);
-    --glass-border: rgba(15, 23, 42, 0.08);
-    --glass-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+    --secondary: rgba(79, 93, 117, 0.08);
+    --secondary-foreground: #3f4d63;
+    --muted: rgba(24, 24, 27, 0.04);
+    --muted-foreground: #6b6b70;
+    --accent: rgba(79, 93, 117, 0.1);
+    --accent-foreground: #3f4d63;
+    --destructive: #c53030;
+    --border: rgba(24, 24, 27, 0.09);
+    --input: rgba(24, 24, 27, 0.11);
+    --ring: #5c6b82;
+    --glass-from: #ffffff;
+    --glass-to: #fafafa;
+    --glass-border: rgba(24, 24, 27, 0.08);
+    --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
     --filter-hover-bg: #ffffff;
+    --nav-active-fg: #3f4d63;
   }
 
   /* Sidebar: always dark (contrast with light/dark main) */
@@ -140,7 +142,7 @@
   }
 
   .light .main-surface {
-    box-shadow: inset 1px 0 0 rgba(15, 23, 42, 0.06);
+    box-shadow: inset 1px 0 0 rgba(24, 24, 27, 0.06);
   }
 
   .dark .main-surface {
@@ -285,17 +287,56 @@
   }
 
   .light .text-gradient {
-    background: linear-gradient(135deg, #0f172a 0%, #4f46e5 50%, #6366f1 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    background: none;
+    -webkit-text-fill-color: var(--foreground);
+    color: var(--foreground);
+  }
+
+  .light .hero-badge {
+    border-color: rgba(24, 24, 27, 0.1);
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #52525b;
+  }
+
+  .light .hero-glow {
+    display: none;
   }
 
   .light .app-gradient {
-    background:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.08), transparent),
-      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(139, 92, 246, 0.05), transparent),
-      var(--background);
+    background: var(--background);
+  }
+
+  .light .glass-card {
+    box-shadow: var(--glass-shadow);
+  }
+
+  .light .glass-card-hover:hover {
+    transform: translateY(-1px);
+    border-color: rgba(24, 24, 27, 0.12);
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      0 8px 24px rgba(0, 0, 0, 0.04);
+  }
+
+  .light .filter-control:hover {
+    border-color: rgba(24, 24, 27, 0.15);
+    background-color: var(--filter-hover-bg);
+  }
+
+  .light .nav-item:hover:not([data-active="true"]) {
+    background-color: rgba(24, 24, 27, 0.04);
+  }
+
+  .light .nav-item[data-active="true"] {
+    background-color: rgba(79, 93, 117, 0.1);
+    color: var(--nav-active-fg);
+    box-shadow: none;
+  }
+
+  .light .primary-glow:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(79, 93, 117, 0.25);
+    filter: none;
   }
 
   .magic-gradient {
@@ -497,50 +538,10 @@
   background: rgba(148, 163, 184, 0.35);
 }
 
-/* Boot guard: block unstyled FOUC until Tailwind is verified (see style-boot-script) */
-html.ito-boot-pending body {
-  visibility: hidden !important;
-}
-
-html.ito-boot-pending::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  background: var(--background, #070b14);
-  background-image: radial-gradient(
-    ellipse 80% 50% at 50% -20%,
-    rgba(99, 102, 241, 0.15),
-    transparent
-  );
-}
-
-html.ito-boot-pending::after {
-  content: "";
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  z-index: 100000;
-  width: 2rem;
-  height: 2rem;
-  margin: -1rem 0 0 -1rem;
-  border: 2px solid rgba(99, 102, 241, 0.25);
-  border-top-color: #6366f1;
-  border-radius: 50%;
-  animation: ito-boot-spin 0.7s linear infinite;
-}
-
-@keyframes ito-boot-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-html.ito-styles-ready body {
-  visibility: visible !important;
-}
-
-html.ito-styles-ready::before,
-html.ito-styles-ready::after {
-  display: none !important;
+/* Boot spinner lives in layout criticalCss; shell hidden until .ito-styles-ready */
+html.ito-styles-ready [data-ito-shell] {
+  display: block;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
 }
