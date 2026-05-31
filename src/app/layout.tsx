@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppShell } from "@/components/layout/app-shell";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
+import { DEV_ASSET_RECOVERY_SCRIPT } from "@/lib/dev-asset-recovery";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,12 +23,6 @@ export const metadata: Metadata = {
   description:
     "AI-powered execution planning platform. Transform project ideas into structured Kanban workflows.",
 };
-
-/** Dev: reload if client JS fails and dashboard skeleton never clears */
-const hydrationWatchdog =
-  process.env.NODE_ENV === "development"
-    ? `(function(){var K="ito-hydration-reload";setTimeout(function(){if(!document.querySelector("[data-dashboard-skeleton]")){sessionStorage.removeItem(K);return;}if(document.querySelector("[data-dashboard-ready],[data-project-board]")){sessionStorage.removeItem(K);return;}var n=+(sessionStorage.getItem(K)||0);if(n>=2)return;sessionStorage.setItem(K,String(n+1));location.reload();},4000);})();`
-    : "";
 
 /** Minimal theme if Tailwind chunk fails to load during dev HMR (prevents white unstyled flash) */
 const criticalCss = `
@@ -52,8 +47,10 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
-        {hydrationWatchdog ? (
-          <script dangerouslySetInnerHTML={{ __html: hydrationWatchdog }} />
+        {process.env.NODE_ENV === "development" ? (
+          <script
+            dangerouslySetInnerHTML={{ __html: DEV_ASSET_RECOVERY_SCRIPT }}
+          />
         ) : null}
       </head>
       <body
