@@ -6,13 +6,13 @@ import {
   LayoutDashboard,
   FolderKanban,
   Sparkles,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -45,39 +45,56 @@ export function Sidebar({
       )}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-full flex-col border-r border-border/60 bg-[#050810]/95 backdrop-blur-xl transition-all duration-300",
+          "ito-sidebar fixed left-0 top-0 z-50 flex h-full flex-col border-r backdrop-blur-xl transition-all duration-300 ease-out shadow-xl shadow-black/20",
           collapsed ? "w-[72px]" : "w-64",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         <div
           className={cn(
-            "flex h-16 items-center border-b border-border/60 px-4",
-            collapsed && "justify-center px-2"
+            "flex h-16 items-center border-b border-[var(--sb-border)] gap-1",
+            collapsed ? "justify-center px-2" : "px-3"
           )}
         >
           <Link
             href="/"
-            className="flex items-center gap-2.5 min-w-0 rounded-lg transition-opacity duration-200 hover:opacity-90"
+            className={cn(
+              "flex items-center gap-2.5 min-w-0 rounded-lg transition-opacity duration-200 hover:opacity-90",
+              collapsed ? "justify-center" : "flex-1"
+            )}
             onClick={onMobileClose}
+            title="ITO — Dashboard"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg magic-gradient shadow-lg shadow-indigo-500/20 transition-shadow duration-300 hover:shadow-indigo-500/35">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg magic-gradient shadow-lg shadow-indigo-500/20">
               <Sparkles className="h-4 w-4 text-white" />
             </div>
             {!collapsed && (
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-foreground">
+                <p className="ito-sidebar-title truncate text-sm font-semibold">
                   ITO
                 </p>
-                <p className="truncate text-[10px] text-muted-foreground leading-tight">
+                <p className="ito-sidebar-subtitle truncate text-[10px] leading-tight">
                   {APP_NAME.split(" ").slice(-2).join(" ")}
                 </p>
               </div>
             )}
           </Link>
+
+          {onToggle && !collapsed && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="hidden lg:flex h-8 w-8 shrink-0 text-[var(--sb-muted)] hover:text-[var(--sb-fg)] hover:bg-[var(--sb-hover)]"
+              onClick={onToggle}
+              aria-label="Collapse sidebar"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </Button>
+          )}
         </div>
 
-        <nav className="flex-1 space-y-1 p-3">
+        <nav className="flex-1 space-y-1 p-3 overflow-y-auto">
           {navItems.map((item) => {
             const isActive =
               item.href === "/"
@@ -90,7 +107,7 @@ export function Sidebar({
                 onClick={onMobileClose}
                 data-active={isActive}
                 className={cn(
-                  "nav-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
+                  "sidebar-nav-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
                   collapsed && "justify-center px-2"
                 )}
                 title={collapsed ? item.label : undefined}
@@ -102,37 +119,26 @@ export function Sidebar({
           })}
         </nav>
 
-        <div className="border-t border-border/60 p-3 space-y-2">
-          {!collapsed && (
-            <div className="rounded-lg bg-indigo-500/10 border border-indigo-500/20 p-3 transition-colors duration-200 hover:border-indigo-500/30">
-              <p className="text-xs font-medium text-indigo-300">AI Powered</p>
-              <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
-                Generate execution plans from project ideas in seconds.
-              </p>
-            </div>
-          )}
-          <button
-            type="button"
-            className={cn(
-              "nav-item flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground",
-              collapsed && "justify-center"
-            )}
-          >
-            <Settings className="h-4 w-4 shrink-0" />
-            {!collapsed && <span>Settings</span>}
-          </button>
+        <div className="border-t border-[var(--sb-border)] p-3 space-y-2">
+          <ThemeToggle collapsed={collapsed} />
           {onToggle && (
             <Button
-              variant="ghost"
-              size="icon"
-              className="hidden lg:flex w-full hover:bg-muted/80"
+              type="button"
+              variant="outline"
+              className={cn(
+                "hidden lg:flex w-full gap-2 border-[var(--sb-border)] bg-[var(--sb-hover)] text-[var(--sb-fg)] hover:bg-[var(--sb-active-bg)] hover:border-indigo-500/40",
+                collapsed ? "justify-center px-0" : "justify-start"
+              )}
               onClick={onToggle}
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {collapsed ? (
-                <ChevronRight className="h-4 w-4" />
+                <PanelLeftOpen className="h-4 w-4 shrink-0 text-indigo-300" />
               ) : (
-                <ChevronLeft className="h-4 w-4" />
+                <>
+                  <PanelLeftClose className="h-4 w-4 shrink-0" />
+                  <span className="text-sm font-medium">Collapse</span>
+                </>
               )}
             </Button>
           )}

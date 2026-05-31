@@ -4,6 +4,8 @@ const isDev = process.env.NODE_ENV === "development";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  /** Removes the bottom-left "N" dev badge that overlaps the sidebar */
+  devIndicators: false,
   /** Prevent stale HTML/CSS/JS mismatches on refresh during dev */
   ...(isDev
     ? {

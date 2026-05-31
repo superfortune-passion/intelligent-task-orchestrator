@@ -9,6 +9,10 @@ export function StyleBootComplete() {
 
     const tryComplete = () => {
       if (!document.body) return false;
+      const hasCss = Boolean(
+        document.querySelector('link[href*="/_next/static/css"]')
+      );
+      if (!hasCss) return false;
       const probe = document.createElement("div");
       probe.className = "hidden";
       document.body.appendChild(probe);

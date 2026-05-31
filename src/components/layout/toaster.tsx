@@ -64,15 +64,15 @@ function ToastCard({
       aria-atomic="true"
       className={cn(
         "pointer-events-auto relative overflow-hidden rounded-xl border backdrop-blur-xl",
-        "animate-in slide-in-from-bottom-4 fade-in zoom-in-95 duration-300",
+        "animate-in slide-in-from-top-4 fade-in zoom-in-95 duration-300",
         "min-w-[min(100%,20rem)] max-w-sm",
         style.glow,
         variant === "success" &&
-          "border-emerald-500/35 bg-[#0a121f]/95",
+          "border-emerald-500/35 bg-popover/95",
         variant === "destructive" &&
-          "border-red-500/35 bg-[#0a121f]/95",
-        variant === "info" && "border-indigo-500/35 bg-[#0a121f]/95",
-        variant === "default" && "border-border/50 bg-[#0a121f]/95"
+          "border-red-500/35 bg-popover/95",
+        variant === "info" && "border-indigo-500/35 bg-popover/95",
+        variant === "default" && "border-border/50 bg-popover/95"
       )}
     >
       <div className={cn("absolute left-0 top-0 bottom-0 w-1", style.bar)} />
@@ -131,8 +131,7 @@ export function Toaster() {
   return (
     <div
       className="fixed z-[100] flex flex-col gap-3 w-full max-w-sm px-4 pointer-events-none
-        bottom-6 left-1/2 -translate-x-1/2
-        sm:left-auto sm:translate-x-0 sm:right-6 sm:bottom-6"
+        top-16 right-4 lg:top-6 lg:right-6"
       aria-label="Notifications"
     >
       {toasts.map((t) => (
