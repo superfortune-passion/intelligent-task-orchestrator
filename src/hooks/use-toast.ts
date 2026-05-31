@@ -2,16 +2,18 @@
 
 import * as React from "react";
 
-const TOAST_LIMIT = 3;
-const TOAST_REMOVE_DELAY = 4000;
+const TOAST_LIMIT = 4;
+const DEFAULT_DURATION = 5500;
 
-type ToastVariant = "default" | "success" | "destructive";
+type ToastVariant = "default" | "success" | "destructive" | "info";
 
 export interface Toast {
   id: string;
   title?: string;
   description?: string;
   variant?: ToastVariant;
+  duration?: number;
+  createdAt: number;
 }
 
 type Action =
@@ -54,12 +56,12 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-function scheduleRemove(id: string) {
+function scheduleRemove(id: string, duration: number) {
   if (timeouts.has(id)) clearTimeout(timeouts.get(id));
   const timeout = setTimeout(() => {
     dispatch({ type: "REMOVE", toastId: id });
     timeouts.delete(id);
-  }, TOAST_REMOVE_DELAY);
+  }, duration);
   timeouts.set(id, timeout);
 }
 
@@ -67,10 +69,21 @@ export function toast({
   title,
   description,
   variant = "default",
-}: Omit<Toast, "id">) {
+  duration = DEFAULT_DURATION,
+}: Omit<Toast, "id" | "createdAt">) {
   const id = crypto.randomUUID();
-  dispatch({ type: "ADD", toast: { id, title, description, variant } });
-  scheduleRemove(id);
+  dispatch({
+    type: "ADD",
+    toast: {
+      id,
+      title,
+      description,
+      variant,
+      duration,
+      createdAt: Date.now(),
+    },
+  });
+  scheduleRemove(id, duration);
   return id;
 }
 
@@ -88,6 +101,12 @@ export function useToast() {
   return {
     toasts: state.toasts,
     toast,
-    dismiss: (toastId: string) => dispatch({ type: "DISMISS", toastId }),
+    dismiss: (toastId: string) => {
+      if (timeouts.has(toastId)) {
+        clearTimeout(timeouts.get(toastId));
+        timeouts.delete(toastId);
+      }
+      dispatch({ type: "DISMISS", toastId });
+    },
   };
 }

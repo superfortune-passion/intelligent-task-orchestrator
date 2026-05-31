@@ -2,7 +2,11 @@
 
 import { useCallback, useState } from "react";
 import { useApp } from "@/components/providers/app-provider";
-import { toast } from "@/hooks/use-toast";
+import {
+  toastTaskCreated,
+  toastTaskDeleted,
+  toastTaskUpdated,
+} from "@/lib/crud-toast";
 import type { Task, TaskFormData, TaskStatus } from "@/types/task";
 
 export function useTaskCrud(projectId: string) {
@@ -32,11 +36,7 @@ export function useTaskCrud(projectId: string) {
     (data: TaskFormData) => {
       const task = createTask(projectId, data);
       setCreateOpen(false);
-      toast({
-        title: "Task created",
-        description: `"${task.title}" added to ${task.status}.`,
-        variant: "success",
-      });
+      toastTaskCreated(task.title, task.status);
     },
     [createTask, projectId]
   );
@@ -47,11 +47,7 @@ export function useTaskCrud(projectId: string) {
       updateTask(editTask.id, data);
       setEditTask(null);
       setCreateOpen(false);
-      toast({
-        title: "Task updated",
-        description: `"${data.title.trim()}" was saved.`,
-        variant: "success",
-      });
+      toastTaskUpdated(data.title.trim());
     },
     [editTask, updateTask]
   );
@@ -61,11 +57,7 @@ export function useTaskCrud(projectId: string) {
     const title = deleteTarget.title;
     deleteTask(deleteTarget.id);
     setDeleteTarget(null);
-    toast({
-      title: "Task deleted",
-      description: `"${title}" was removed.`,
-      variant: "success",
-    });
+    toastTaskDeleted(title);
   }, [deleteTarget, deleteTask]);
 
   return {

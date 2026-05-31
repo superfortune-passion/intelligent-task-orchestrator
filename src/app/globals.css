@@ -221,6 +221,35 @@
     @apply h-9 w-9 min-h-[2.75rem] min-w-[2.75rem] sm:h-8 sm:w-8 sm:min-h-0 sm:min-w-0;
   }
 
+  @keyframes toast-progress {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0);
+    }
+  }
+
+  .confirm-dialog-overlay {
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+  }
+
+  .confirm-dialog-content {
+    animation: confirm-pop 0.28s cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  @keyframes confirm-pop {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -48%) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
   .task-enter {
     animation: task-enter 0.45s cubic-bezier(0.2, 0, 0, 1) forwards;
   }
