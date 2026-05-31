@@ -2,24 +2,10 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import {
-  GripVertical,
-  Calendar,
-  MessageCircle,
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { GripVertical, Calendar, MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { TaskCardActions } from "@/components/tasks/task-card-actions";
 import { formatDueDate } from "@/lib/date";
 import {
   getCategoryBadgeVariant,
@@ -70,7 +56,7 @@ export function TaskCard({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "glass-card rounded-lg p-3.5 group touch-manipulation",
+        "glass-card rounded-lg p-3.5 group touch-manipulation relative",
         dragging &&
           "opacity-90 shadow-2xl ring-2 ring-indigo-500/50 scale-[1.02] z-50",
         !dragging &&
@@ -78,7 +64,14 @@ export function TaskCard({
         isNew && "task-enter ring-1 ring-indigo-500/30"
       )}
     >
-      <div className="flex items-start gap-2">
+      {!dragging && (
+        <div
+          className="absolute inset-x-0 top-0 h-8 rounded-t-lg bg-gradient-to-b from-indigo-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+          aria-hidden
+        />
+      )}
+
+      <div className="flex items-start gap-2 relative">
         <button
           type="button"
           className="mt-0.5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none shrink-0"
@@ -90,34 +83,14 @@ export function TaskCard({
         </button>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-semibold text-foreground line-clamp-2 break-words leading-snug">
+            <p className="text-sm font-semibold text-foreground line-clamp-2 break-words leading-snug pr-1">
               {task.title}
             </p>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100"
-                >
-                  <MoreHorizontal className="h-3.5 w-3.5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={onEdit}>
-                  <Pencil className="h-4 w-4" />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={onDelete}
-                  className="text-red-400 focus:text-red-400"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <TaskCardActions
+              onEdit={onEdit}
+              onDelete={onDelete}
+              disabled={dragging}
+            />
           </div>
 
           {task.description ? (

@@ -1,5 +1,6 @@
 "use client";
 
+import { AlertTriangle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,14 +26,30 @@ export function DeleteTaskDialog({
 }: DeleteTaskDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="border-red-500/20 sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Delete Task</DialogTitle>
-          <DialogDescription>
-            Delete &quot;{taskTitle}&quot;? This cannot be undone.
-          </DialogDescription>
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-500/15 border border-red-500/25">
+              <AlertTriangle className="h-5 w-5 text-red-400" aria-hidden />
+            </div>
+            <div className="min-w-0 space-y-1.5">
+              <DialogTitle>Delete task?</DialogTitle>
+              <DialogDescription asChild>
+                <div className="text-sm text-muted-foreground leading-relaxed">
+                  <p>
+                    This will permanently remove the task from your board and
+                    local storage.
+                  </p>
+                  <p className="mt-2 rounded-md border border-border/50 bg-muted/30 px-3 py-2 text-foreground font-medium break-words">
+                    {taskTitle || "Untitled task"}
+                  </p>
+                  <p className="mt-2 text-xs">This action cannot be undone.</p>
+                </div>
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
@@ -43,7 +60,7 @@ export function DeleteTaskDialog({
               onOpenChange(false);
             }}
           >
-            Delete Task
+            Delete task
           </Button>
         </DialogFooter>
       </DialogContent>
