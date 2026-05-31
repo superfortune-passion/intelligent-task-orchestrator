@@ -47,7 +47,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="dashboard-page px-4 py-6 sm:px-6 sm:py-8 md:px-8 max-w-7xl mx-auto w-full overflow-x-hidden">
+    <div
+      className="dashboard-page px-4 py-6 sm:px-6 sm:py-8 md:px-8 max-w-7xl mx-auto w-full overflow-x-hidden"
+      data-dashboard-ready
+    >
       <header className="mb-6 sm:mb-8 min-w-0">
         <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-1">
           Dashboard

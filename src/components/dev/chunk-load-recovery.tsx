@@ -3,18 +3,19 @@
 import { useEffect } from "react";
 
 const RELOAD_KEY = "ito-dev-asset-reload";
+const HYDRATION_KEY = "ito-hydration-reload";
 
 /**
- * Dev-only: recover from stale /_next assets or plain "Internal Server Error" after HMR.
+ * Dev-only: recover from stale /_next chunks, failed main-app.js, or stuck dashboard skeleton.
  */
 export function ChunkLoadRecovery() {
   useEffect(() => {
     if (process.env.NODE_ENV !== "development") return;
 
-    const reloadOnce = (reason: string) => {
-      const attempts = Number(sessionStorage.getItem(RELOAD_KEY) ?? "0");
+    const reloadOnce = (key: string, reason: string) => {
+      const attempts = Number(sessionStorage.getItem(key) ?? "0");
       if (attempts >= 2) return;
-      sessionStorage.setItem(RELOAD_KEY, String(attempts + 1));
+      sessionStorage.setItem(key, String(attempts + 1));
       console.warn(`[dev] Recovering: ${reason}`);
       window.location.reload();
     };
@@ -23,7 +24,7 @@ export function ChunkLoadRecovery() {
       document.body?.childNodes.length <= 1 &&
       document.body?.textContent?.trim() === "Internal Server Error"
     ) {
-      reloadOnce("server 500 stale build");
+      reloadOnce(RELOAD_KEY, "server 500 stale build");
       return;
     }
 
@@ -37,11 +38,22 @@ export function ChunkLoadRecovery() {
       }
       const url =
         target instanceof HTMLLinkElement ? target.href : target.src;
-      if (!url.includes("/_next/static")) return;
-      reloadOnce(`failed to load ${url}`);
+      if (!url.includes("/_next/")) return;
+      reloadOnce(RELOAD_KEY, `failed to load ${url}`);
     };
 
     window.addEventListener("error", onError, true);
+
+    const stuckTimer = window.setTimeout(() => {
+      const skeleton = document.querySelector("[data-dashboard-skeleton]");
+      const hasHero = document.querySelector("[data-dashboard-ready]");
+      if (skeleton && !hasHero) {
+        reloadOnce(
+          HYDRATION_KEY,
+          "client bundle did not hydrate (stuck loading skeleton)"
+        );
+      }
+    }, 4000);
 
     const resetIfHealthy = () => {
       const hasAppCss = Array.from(document.styleSheets).some((sheet) => {
@@ -52,19 +64,21 @@ export function ChunkLoadRecovery() {
         }
       });
       const hasContent = Boolean(
-        document.querySelector(".app-gradient, main, [data-ito-shell]")
+        document.querySelector("[data-dashboard-ready], [data-project-board]")
       );
       if (hasAppCss || hasContent) {
         sessionStorage.removeItem(RELOAD_KEY);
+        sessionStorage.removeItem(HYDRATION_KEY);
       }
     };
 
     resetIfHealthy();
-    const timer = window.setTimeout(resetIfHealthy, 2000);
+    const healthTimer = window.setTimeout(resetIfHealthy, 1500);
 
     return () => {
       window.removeEventListener("error", onError, true);
-      window.clearTimeout(timer);
+      window.clearTimeout(stuckTimer);
+      window.clearTimeout(healthTimer);
     };
   }, []);
 

@@ -8,11 +8,13 @@ import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -21,15 +23,42 @@ export const metadata: Metadata = {
     "AI-powered execution planning platform. Transform project ideas into structured Kanban workflows.",
 };
 
+/** Dev: reload if client JS fails and dashboard skeleton never clears */
+const hydrationWatchdog =
+  process.env.NODE_ENV === "development"
+    ? `(function(){var K="ito-hydration-reload";setTimeout(function(){if(!document.querySelector("[data-dashboard-skeleton]")){sessionStorage.removeItem(K);return;}if(document.querySelector("[data-dashboard-ready],[data-project-board]")){sessionStorage.removeItem(K);return;}var n=+(sessionStorage.getItem(K)||0);if(n>=2)return;sessionStorage.setItem(K,String(n+1));location.reload();},4000);})();`
+    : "";
+
+/** Minimal theme if Tailwind chunk fails to load during dev HMR (prevents white unstyled flash) */
+const criticalCss = `
+  html { color-scheme: dark; }
+  body {
+    margin: 0;
+    background-color: #070b14;
+    color: #e8ecf4;
+    font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  a { color: #a5b4fc; }
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
+        {hydrationWatchdog ? (
+          <script dangerouslySetInnerHTML={{ __html: hydrationWatchdog }} />
+        ) : null}
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-background text-foreground`}
+        suppressHydrationWarning
       >
         <AppShell>{children}</AppShell>
       </body>

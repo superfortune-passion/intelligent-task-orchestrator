@@ -1,6 +1,7 @@
 /**
- * Stops stale Next dev servers, clears build caches, starts a clean dev server.
- * Default: webpack dev (stable on Windows). Pass --turbo for Turbopack.
+ * Stops stale Next dev servers and starts dev.
+ * Default: keeps .next cache (stable refresh). Pass --fresh to wipe caches.
+ * Pass --turbo for Turbopack (optional).
  */
 const { execSync, spawn } = require("child_process");
 const fs = require("fs");
@@ -58,15 +59,18 @@ function rmDir(dir) {
 
 async function main() {
   const useTurbo = process.argv.includes("--turbo");
+  const wipeCache = process.argv.includes("--fresh");
 
   for (const port of [3000, 3001, 3002, 3003, 3004]) {
     killPort(port);
   }
 
-  await sleep(800);
+  await sleep(600);
 
-  for (const dir of cacheDirs) {
-    rmDir(dir);
+  if (wipeCache) {
+    for (const dir of cacheDirs) {
+      rmDir(dir);
+    }
   }
 
   const args = useTurbo
@@ -75,7 +79,7 @@ async function main() {
 
   const mode = useTurbo ? "turbopack" : "webpack";
   console.log(
-    `Starting dev server on http://localhost:3000 (${mode}) ...`
+    `Starting dev server on http://localhost:3000 (${mode}${wipeCache ? ", fresh cache" : ""}) ...`
   );
 
   const child = spawn("npx", args, {

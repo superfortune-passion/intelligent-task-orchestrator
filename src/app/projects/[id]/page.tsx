@@ -98,7 +98,10 @@ export default function ProjectWorkspacePage({
   }
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 max-w-[1600px] mx-auto w-full overflow-x-hidden">
+    <div
+      className="p-4 sm:p-6 md:p-8 max-w-[1600px] mx-auto w-full overflow-x-hidden"
+      data-project-board
+    >
       <div className="mb-6">
         <Button
           variant="ghost"

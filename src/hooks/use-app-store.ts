@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { loadState, saveState } from "@/services/storage";
 import {
   createProjectEntity,
@@ -16,13 +16,26 @@ import {
   type TaskStatus,
 } from "@/types/task";
 
+const EMPTY_STATE: AppState = { projects: [], tasks: [] };
+
+function readStoredState(): AppState {
+  if (typeof window === "undefined") return EMPTY_STATE;
+  try {
+    return loadState();
+  } catch {
+    return EMPTY_STATE;
+  }
+}
+
 export function useAppStore() {
-  const [state, setState] = useState<AppState>({ projects: [], tasks: [] });
+  const [state, setState] = useState<AppState>(EMPTY_STATE);
   const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => {
-    setState(loadState());
+  useLayoutEffect(() => {
+    setState(readStoredState());
     setHydrated(true);
+    sessionStorage.removeItem("ito-dev-asset-reload");
+    sessionStorage.removeItem("ito-hydration-reload");
   }, []);
 
   useEffect(() => {
