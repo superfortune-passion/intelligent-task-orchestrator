@@ -6,8 +6,6 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Toaster } from "@/components/layout/toaster";
 import { Button } from "@/components/ui/button";
 import { AppProvider } from "@/components/providers/app-provider";
-import { ThemeProvider } from "@/components/providers/theme-provider";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { ChunkLoadRecovery } from "@/components/dev/chunk-load-recovery";
 import { StyleBootComplete } from "@/components/dev/style-boot-complete";
 import { ShellGate } from "@/components/layout/shell-gate";
@@ -31,6 +29,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setSidebarCollapsed(readCollapsed());
     setMounted(true);
+    try {
+      localStorage.removeItem("ito-theme");
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   useEffect(() => {
@@ -45,11 +48,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const toggleSidebar = () => setSidebarCollapsed((c) => !c);
 
   return (
-    <ThemeProvider>
-      <AppProvider>
-        <StyleBootComplete />
-        <ChunkLoadRecovery />
-        <ShellGate>
+    <AppProvider>
+      <StyleBootComplete />
+      <ChunkLoadRecovery />
+      <ShellGate>
         <div className="min-h-screen" data-ito-shell>
           <Sidebar
             collapsed={sidebarCollapsed}
@@ -74,7 +76,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <span className="text-sm font-semibold truncate min-w-0 flex-1">
                 Intelligent Task Orchestrator
               </span>
-              <ThemeToggle inSidebar={false} className="w-auto shrink-0" />
             </header>
             <main className="min-h-[calc(100vh-3.5rem)] lg:min-h-screen min-w-0 overflow-x-hidden">
               {children}
@@ -82,8 +83,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <Toaster />
         </div>
-        </ShellGate>
-      </AppProvider>
-    </ThemeProvider>
+      </ShellGate>
+    </AppProvider>
   );
 }

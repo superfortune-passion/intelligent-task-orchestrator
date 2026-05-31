@@ -12,8 +12,6 @@ import {
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
-
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/projects", label: "Projects", icon: FolderKanban },
@@ -119,8 +117,7 @@ export function Sidebar({
           })}
         </nav>
 
-        <div className="border-t border-[var(--sb-border)] p-3 space-y-2">
-          <ThemeToggle collapsed={collapsed} />
+        <div className="border-t border-[var(--sb-border)] p-3">
           {onToggle && (
             <Button
               type="button"

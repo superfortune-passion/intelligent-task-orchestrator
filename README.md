@@ -13,17 +13,19 @@ Intelligent Task Orchestrator is a client-first execution planning workspace for
 | **Production (Vercel)** | Deploy with `npx vercel --prod`, then paste your URL here |
 | **Local** | [http://localhost:3000](http://localhost:3000) |
 
-> **Before submission:** Run `npx vercel --prod`, add your live URL above, and capture screenshots into `docs/screenshots/`.
+> **Before submission:** Run `npx vercel --prod` and add your live URL above.
 
 ---
 
 ## Screenshots
 
-| Dashboard | Project board |
-|-----------|---------------|
-| ![Dashboard placeholder](./docs/screenshots/dashboard.png) | ![Kanban placeholder](./docs/screenshots/kanban.png) |
+### Dashboard
 
-*Add captures under `docs/screenshots/` (dashboard, project workspace, Magic Generate, mobile layout). Until then, run locally with `npm run dev:fresh`.*
+![Intelligent Task Orchestrator dashboard — dark SaaS UI with hero, overview stats, and recent projects](./docs/screenshots/dashboard.png)
+
+### Project board (Kanban)
+
+![Plan Product Launch — four-column Kanban with Magic Generate, filters, and drag-and-drop task cards](./docs/screenshots/kanban.png)
 
 ---
 

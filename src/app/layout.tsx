@@ -5,7 +5,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AppShell } from "@/components/layout/app-shell";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 import { STYLE_BOOT_SCRIPT } from "@/lib/style-boot-script";
-import { THEME_INIT_SCRIPT } from "@/lib/theme-init-script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,14 +24,10 @@ export const metadata: Metadata = {
     "AI-powered execution planning platform. Transform project ideas into structured Kanban workflows.",
 };
 
-/** Inline — hides broken layout until Tailwind is ready (never show link soup) */
 const criticalCss = `
-  html.dark { color-scheme: dark; }
-  html.light { color-scheme: light; }
+  html { color-scheme: dark; }
   html.ito-boot-pending,
-  html:not(.ito-styles-ready) { background: #f4f4f5; }
-  html.dark.ito-boot-pending,
-  html.dark:not(.ito-styles-ready) { background: #070b14; }
+  html:not(.ito-styles-ready) { background: #070b14; }
   html:not(.ito-styles-ready) [data-ito-shell] {
     display: none !important;
     visibility: hidden !important;
@@ -42,8 +37,8 @@ const criticalCss = `
   body {
     margin: 0;
     overflow-x: hidden;
-    background-color: var(--background, #f4f4f5);
-    color: var(--foreground, #1c1c1e);
+    background-color: #070b14;
+    color: #e8ecf4;
     font-family: system-ui, -apple-system, Segoe UI, sans-serif;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
@@ -54,7 +49,7 @@ const criticalCss = `
     position: fixed;
     inset: 0;
     z-index: 2147483646;
-    background: inherit;
+    background: #070b14;
   }
   html.ito-boot-pending::after,
   html:not(.ito-styles-ready):not(.ito-boot-failed)::after {
@@ -66,8 +61,8 @@ const criticalCss = `
     width: 2rem;
     height: 2rem;
     margin: -1rem 0 0 -1rem;
-    border: 2px solid rgba(120, 130, 150, 0.25);
-    border-top-color: #5c6b82;
+    border: 2px solid rgba(99, 102, 241, 0.25);
+    border-top-color: #6366f1;
     border-radius: 50%;
     animation: ito-spin 0.7s linear infinite;
   }
@@ -83,7 +78,7 @@ const criticalCss = `
     padding: 2rem;
     text-align: center;
     font: 14px/1.5 system-ui, sans-serif;
-    color: #52525b;
+    color: #94a3b8;
     width: auto;
     height: auto;
     margin: 0;
@@ -98,9 +93,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light ito-boot-pending" suppressHydrationWarning>
+    <html lang="en" className="dark ito-boot-pending" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
         <script dangerouslySetInnerHTML={{ __html: STYLE_BOOT_SCRIPT }} />
       </head>
