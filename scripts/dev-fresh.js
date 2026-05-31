@@ -1,6 +1,6 @@
 /**
  * Stops stale Next dev servers and starts dev.
- * Default: keeps .next cache (stable refresh). Pass --fresh to wipe caches.
+ * Default: wipes .next cache (prevents stale CSS/JS on refresh). Pass --keep-cache to skip.
  * Pass --turbo for Turbopack (optional).
  */
 const { execSync, spawn } = require("child_process");
@@ -59,7 +59,7 @@ function rmDir(dir) {
 
 async function main() {
   const useTurbo = process.argv.includes("--turbo");
-  const wipeCache = process.argv.includes("--fresh");
+  const wipeCache = !process.argv.includes("--keep-cache");
 
   for (const port of [3000, 3001, 3002, 3003, 3004]) {
     killPort(port);

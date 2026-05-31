@@ -359,3 +359,51 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.35);
 }
+
+/* Boot guard: block unstyled FOUC until Tailwind is verified (see style-boot-script) */
+html.ito-boot-pending body {
+  visibility: hidden !important;
+}
+
+html.ito-boot-pending::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #070b14;
+  background-image: radial-gradient(
+    ellipse 80% 50% at 50% -20%,
+    rgba(99, 102, 241, 0.15),
+    transparent
+  );
+}
+
+html.ito-boot-pending::after {
+  content: "";
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 100000;
+  width: 2rem;
+  height: 2rem;
+  margin: -1rem 0 0 -1rem;
+  border: 2px solid rgba(99, 102, 241, 0.25);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: ito-boot-spin 0.7s linear infinite;
+}
+
+@keyframes ito-boot-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+html.ito-styles-ready body {
+  visibility: visible !important;
+}
+
+html.ito-styles-ready::before,
+html.ito-styles-ready::after {
+  display: none !important;
+}

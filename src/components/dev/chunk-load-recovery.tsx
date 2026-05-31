@@ -2,38 +2,44 @@
 
 import { useEffect } from "react";
 
-const RELOAD_KEY = "ito-dev-asset-reload";
+const RELOAD_KEY = "ito-chunk-recovery";
 
-function hasAppStylesheet(): boolean {
-  return Array.from(document.styleSheets).some((sheet) => {
-    try {
-      return Boolean(sheet.href?.includes("/_next/static/css"));
-    } catch {
-      return false;
-    }
-  });
+function tailwindReady(): boolean {
+  if (!document.body) return false;
+  const probe = document.createElement("div");
+  probe.className = "hidden";
+  probe.setAttribute("aria-hidden", "true");
+  document.body.appendChild(probe);
+  const ok = getComputedStyle(probe).display === "none";
+  probe.remove();
+  return ok;
 }
 
 /**
- * Dev-only: backup recovery when inline head script did not reload in time.
+ * React backup: fast recovery if inline boot script did not reload in time.
  */
 export function ChunkLoadRecovery() {
   useEffect(() => {
     if (process.env.NODE_ENV !== "development") return;
 
     const reloadOnce = (reason: string) => {
-      const attempts = Number(sessionStorage.getItem(RELOAD_KEY) ?? "0");
+      const bootKey = "ito-style-boot";
+      const attempts = Math.max(
+        Number(sessionStorage.getItem(RELOAD_KEY) ?? "0"),
+        Number(sessionStorage.getItem(bootKey) ?? "0")
+      );
       if (attempts >= 3) return;
       sessionStorage.setItem(RELOAD_KEY, String(attempts + 1));
-      console.warn(`[dev] Recovering: ${reason}`);
+      sessionStorage.setItem(bootKey, String(attempts + 1));
+      console.warn(`[ITO] Chunk recovery: ${reason}`);
       window.location.reload();
     };
 
     if (
-      document.body?.childNodes.length <= 1 &&
-      document.body?.textContent?.trim() === "Internal Server Error"
+      document.body?.textContent?.trim() === "Internal Server Error" ||
+      document.body?.textContent?.includes("Internal Server Error")
     ) {
-      reloadOnce("server 500 stale build");
+      reloadOnce("server 500");
       return;
     }
 
@@ -48,37 +54,41 @@ export function ChunkLoadRecovery() {
       const url =
         target instanceof HTMLLinkElement ? target.href : target.src;
       if (!url.includes("/_next/")) return;
-      reloadOnce(`failed to load ${url}`);
+      reloadOnce(`failed asset ${url}`);
     };
 
     window.addEventListener("error", onError, true);
 
-    const checkTimer = window.setTimeout(() => {
-      const hasShell = Boolean(document.querySelector("[data-ito-shell]"));
-      const hasHydrated = Boolean(
-        document.querySelector("[data-dashboard-ready], [data-project-board]")
-      );
-      const hasCss = hasAppStylesheet();
+    const timers = [400, 1200, 2800].map((ms) =>
+      window.setTimeout(() => {
+        if (document.documentElement.classList.contains("ito-styles-ready")) {
+          sessionStorage.removeItem(RELOAD_KEY);
+          return;
+        }
 
-      if (hasHydrated && hasCss) {
-        sessionStorage.removeItem(RELOAD_KEY);
-        return;
-      }
+        const hasShell = Boolean(document.querySelector("[data-ito-shell]"));
+        if (!hasShell) return;
 
-      if (hasShell && !hasCss) {
-        reloadOnce("stylesheets missing (unstyled page)");
-        return;
-      }
+        if (!tailwindReady()) {
+          reloadOnce("tailwind inactive after hydration");
+          return;
+        }
 
-      const skeleton = document.querySelector("[data-dashboard-skeleton]");
-      if (skeleton && !hasHydrated) {
-        reloadOnce("stuck loading skeleton");
-      }
-    }, 3500);
+        const hasHydrated = Boolean(
+          document.querySelector(
+            "[data-dashboard-ready], [data-project-board], [data-projects-ready]"
+          )
+        );
+        const skeleton = document.querySelector("[data-dashboard-skeleton]");
+        if (skeleton && !hasHydrated) {
+          reloadOnce("stuck skeleton");
+        }
+      }, ms)
+    );
 
     return () => {
       window.removeEventListener("error", onError, true);
-      window.clearTimeout(checkTimer);
+      timers.forEach((id) => window.clearTimeout(id));
     };
   }, []);
 

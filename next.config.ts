@@ -4,7 +4,7 @@ const isDev = process.env.NODE_ENV === "development";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  /** Prevent browser from caching HTML with stale /_next asset URLs between HMR rebuilds */
+  /** Prevent stale HTML/CSS/JS mismatches on refresh during dev */
   ...(isDev
     ? {
         async headers() {
@@ -18,14 +18,25 @@ const nextConfig: NextConfig = {
                 },
               ],
             },
+            {
+              source: "/_next/static/:path*",
+              headers: [
+                {
+                  key: "Cache-Control",
+                  value: "no-store, no-cache, must-revalidate",
+                },
+              ],
+            },
           ];
         },
-        webpack: (config) => {
-          config.watchOptions = {
-            ...config.watchOptions,
-            aggregateTimeout: 600,
-            poll: 1000,
-          };
+        webpack: (config, { dev }) => {
+          if (dev) {
+            config.watchOptions = {
+              ...config.watchOptions,
+              aggregateTimeout: 800,
+              poll: 1000,
+            };
+          }
           return config;
         },
       }

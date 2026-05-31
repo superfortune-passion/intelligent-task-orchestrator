@@ -33,7 +33,10 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="dashboard-page page-shell p-4 sm:p-6 md:p-8">
+    <div
+      className="dashboard-page page-shell p-4 sm:p-6 md:p-8"
+      data-projects-ready
+    >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div className="min-w-0">
           <h1 className="typo-page-title">Projects</h1>
