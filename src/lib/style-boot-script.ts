@@ -20,12 +20,22 @@ export const STYLE_BOOT_SCRIPT = `(function(){
     location.reload();
   }
 
+  function findNextCssLink(){
+    var links=document.querySelectorAll('link[rel="stylesheet"]');
+    for(var i=0;i<links.length;i++){
+      var link=links[i];
+      var href=link.getAttribute("href")||link.href||"";
+      if(href.indexOf("/_next/static/")===-1)continue;
+      if(!/\\.css/i.test(href))continue;
+      if(link.sheet)return link;
+    }
+    return null;
+  }
+
   function utilitiesReady(){
     try{
       if(!document.body)return false;
-      var cssLink=document.querySelector('link[href*="/_next/static/css"]');
-      if(!cssLink)return false;
-      if(!cssLink.sheet)return false;
+      if(!findNextCssLink())return false;
 
       var hiddenProbe=document.createElement("div");
       hiddenProbe.className="hidden";
@@ -64,8 +74,9 @@ export const STYLE_BOOT_SCRIPT = `(function(){
     var links=document.querySelectorAll('link[rel="stylesheet"]');
     for(var i=0;i<links.length;i++){
       var link=links[i];
-      var href=link.href||"";
-      if(href.indexOf("/_next/static/css")===-1)continue;
+      var href=link.getAttribute("href")||link.href||"";
+      if(href.indexOf("/_next/static/")===-1)continue;
+      if(!/\\.css/i.test(href))continue;
       if(link.sheet){tick();continue;}
       link.addEventListener("load",tick);
       link.addEventListener("error",function(){reload("css load error");});
