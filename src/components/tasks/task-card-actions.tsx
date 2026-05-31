@@ -43,7 +43,7 @@ export function TaskCardActions({
         type="button"
         variant="ghost"
         size="icon"
-        className="h-7 w-7 text-muted-foreground hover:text-indigo-300 hover:bg-indigo-500/15"
+        className="icon-touch text-muted-foreground hover:text-indigo-300 hover:bg-indigo-500/15"
         onClick={(e) => {
           e.stopPropagation();
           onEdit();
@@ -58,7 +58,7 @@ export function TaskCardActions({
         type="button"
         variant="ghost"
         size="icon"
-        className="h-7 w-7 text-muted-foreground hover:text-red-400 hover:bg-red-500/15"
+        className="icon-touch text-muted-foreground hover:text-red-400 hover:bg-red-500/15"
         onClick={(e) => {
           e.stopPropagation();
           onDelete();
@@ -75,7 +75,7 @@ export function TaskCardActions({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-muted/60"
+            className="icon-touch text-muted-foreground hover:text-foreground hover:bg-muted/60"
             aria-label="Task actions menu"
           >
             <MoreHorizontal className="h-3.5 w-3.5" />

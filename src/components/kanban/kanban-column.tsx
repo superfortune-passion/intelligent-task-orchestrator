@@ -100,7 +100,7 @@ export function KanbanColumn({
           type="button"
           variant="ghost"
           size="sm"
-          className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/60 border border-dashed border-border/50 transition-all duration-200 hover:border-indigo-500/30"
+          className="w-full justify-start gap-2 min-h-[2.75rem] text-muted-foreground hover:text-foreground hover:bg-muted/60 border border-dashed border-border/50 transition-all duration-200 hover:border-indigo-500/30 focus-visible:ring-2 focus-visible:ring-ring"
           onClick={() => onAddTask(status)}
           disabled={addTaskDisabled}
         >

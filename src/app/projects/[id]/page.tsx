@@ -76,12 +76,13 @@ export default function ProjectWorkspacePage({
 
   if (!hydrated) {
     return (
-      <div className="p-4 sm:p-6 md:p-8 space-y-6 max-w-[1600px] mx-auto">
-        <Skeleton className="h-12 w-64" />
-        <Skeleton className="h-10 w-full max-w-xl" />
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="project-page page-shell-wide p-4 sm:p-6 md:p-8 space-y-6">
+        <Skeleton className="h-10 w-40 rounded-lg" />
+        <Skeleton className="h-16 w-full max-w-2xl rounded-xl" />
+        <Skeleton className="h-10 w-full max-w-xl rounded-lg" />
+        <div className="kanban-grid">
           {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="h-[320px] rounded-xl" />
+            <Skeleton key={i} className="min-h-[280px] rounded-xl" />
           ))}
         </div>
       </div>
@@ -142,8 +143,9 @@ export default function ProjectWorkspacePage({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 shrink-0"
+                  className="h-9 w-9 shrink-0 focus-visible:ring-2 focus-visible:ring-ring"
                   onClick={() => projectCrud.openEdit(project)}
+                  aria-label="Edit project"
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>

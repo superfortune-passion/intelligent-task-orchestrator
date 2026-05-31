@@ -13,6 +13,18 @@ export function getPriorityBadgeVariant(
   }
 }
 
+/** Dot color for task card footer priority indicator */
+export function getPriorityDotClass(priority: TaskPriority): string {
+  switch (priority) {
+    case "High":
+      return "bg-red-400 shadow-[0_0_6px_rgba(248,113,113,0.5)]";
+    case "Low":
+      return "bg-slate-400";
+    default:
+      return "bg-amber-400";
+  }
+}
+
 export function getCategoryBadgeVariant(
   category: string
 ): "research" | "planning" | "marketing" | "operations" | "review" | "design" | "development" | "general" {

@@ -206,6 +206,21 @@
     @apply text-sm text-muted-foreground leading-relaxed;
   }
 
+  .typo-caption {
+    @apply text-xs text-muted-foreground leading-relaxed;
+  }
+
+  .form-dialog {
+    border-color: rgba(99, 102, 241, 0.2);
+    box-shadow:
+      0 20px 50px rgba(0, 0, 0, 0.45),
+      0 0 24px rgba(99, 102, 241, 0.08);
+  }
+
+  .icon-touch {
+    @apply h-9 w-9 min-h-[2.75rem] min-w-[2.75rem] sm:h-8 sm:w-8 sm:min-h-0 sm:min-w-0;
+  }
+
   .task-enter {
     animation: task-enter 0.45s cubic-bezier(0.2, 0, 0, 1) forwards;
   }

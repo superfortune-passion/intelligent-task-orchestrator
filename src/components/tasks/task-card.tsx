@@ -2,14 +2,14 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Calendar, MessageCircle } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { GripVertical, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TaskCardActions } from "@/components/tasks/task-card-actions";
 import { formatDueDate } from "@/lib/date";
 import {
   getCategoryBadgeVariant,
   getPriorityBadgeVariant,
+  getPriorityDotClass,
 } from "@/lib/task-badges";
 import type { Task } from "@/types/task";
 import { cn } from "@/lib/utils";
@@ -20,12 +20,6 @@ interface TaskCardProps {
   onDelete: () => void;
   isDragging?: boolean;
   isNew?: boolean;
-}
-
-function assigneeInitials(taskId: string): string {
-  const code = taskId.charCodeAt(0) + taskId.charCodeAt(taskId.length - 1);
-  const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-  return letters[code % letters.length] + letters[(code * 3) % letters.length];
 }
 
 export function TaskCard({
@@ -56,7 +50,7 @@ export function TaskCard({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "glass-card rounded-lg p-3.5 group touch-manipulation relative",
+        "glass-card rounded-lg p-3.5 group touch-manipulation relative min-h-[7.5rem]",
         dragging &&
           "opacity-90 shadow-2xl ring-2 ring-indigo-500/50 scale-[1.02] z-50",
         !dragging && "glass-card-hover",
@@ -73,7 +67,7 @@ export function TaskCard({
       <div className="flex items-start gap-2 relative">
         <button
           type="button"
-          className="mt-0.5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none shrink-0"
+          className="mt-0.5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
           {...attributes}
           {...listeners}
           aria-label="Drag task"
@@ -108,32 +102,25 @@ export function TaskCard({
           </div>
 
           <div className="flex items-center justify-between gap-2 mt-3 pt-2 border-t border-border/40">
-            <div className="flex items-center gap-3 min-w-0">
-              {task.dueDate ? (
-                <div className="flex items-center gap-1 text-[11px] text-muted-foreground shrink-0">
-                  <Calendar className="h-3 w-3" aria-hidden />
-                  <span>{formatDueDate(task.dueDate)}</span>
-                </div>
-              ) : (
-                <span className="text-[11px] text-muted-foreground/60">
-                  No due date
-                </span>
-              )}
-              <button
-                type="button"
-                className="flex items-center gap-0.5 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-                aria-label="Comments (coming soon)"
-                tabIndex={-1}
-              >
-                <MessageCircle className="h-3.5 w-3.5" />
-                <span className="text-[10px]">0</span>
-              </button>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground min-w-0">
+              <Calendar className="h-3 w-3 shrink-0" aria-hidden />
+              <span className="truncate">
+                {task.dueDate ? formatDueDate(task.dueDate) : "No due date"}
+              </span>
             </div>
-            <Avatar className="h-6 w-6 shrink-0 ring-1 ring-border/60">
-              <AvatarFallback className="text-[9px] bg-indigo-500/25 text-indigo-200">
-                {assigneeInitials(task.id)}
-              </AvatarFallback>
-            </Avatar>
+            <div
+              className="flex items-center gap-1.5 shrink-0 text-xs text-muted-foreground"
+              title={`${task.priority} priority`}
+            >
+              <span
+                className={cn(
+                  "h-2 w-2 rounded-full shrink-0",
+                  getPriorityDotClass(task.priority)
+                )}
+                aria-hidden
+              />
+              <span className="hidden sm:inline">{task.priority}</span>
+            </div>
           </div>
         </div>
       </div>

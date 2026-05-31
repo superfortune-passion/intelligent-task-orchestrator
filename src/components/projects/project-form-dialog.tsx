@@ -53,7 +53,7 @@ export function ProjectFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="form-dialog sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
             {mode === "create" ? "Create Project" : "Edit Project"}
@@ -96,7 +96,11 @@ export function ProjectFormDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={!title.trim()}>
+            <Button
+              type="submit"
+              disabled={!title.trim()}
+              className="primary-glow"
+            >
               {mode === "create" ? "Create Project" : "Save Changes"}
             </Button>
           </DialogFooter>

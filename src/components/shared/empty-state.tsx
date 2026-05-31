@@ -24,11 +24,11 @@ export function EmptyState({
         className
       )}
     >
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4">
-        <Icon className="h-7 w-7 text-indigo-400" />
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-4 transition-shadow duration-300 hover:shadow-lg hover:shadow-indigo-500/15">
+        <Icon className="h-7 w-7 text-indigo-400" aria-hidden />
       </div>
-      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground max-w-sm mb-6">{description}</p>
+      <h3 className="typo-section-title text-center mb-2">{title}</h3>
+      <p className="typo-muted max-w-sm mb-6">{description}</p>
       {action}
     </div>
   );

@@ -97,7 +97,7 @@ export function TaskFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="form-dialog sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
             {mode === "create" ? "Add Task" : "Edit Task"}
@@ -213,7 +213,11 @@ export function TaskFormDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={!title.trim()}>
+            <Button
+              type="submit"
+              disabled={!title.trim()}
+              className="primary-glow"
+            >
               {mode === "create" ? "Add Task" : "Save Task"}
             </Button>
           </DialogFooter>
