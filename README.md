@@ -10,8 +10,7 @@ Intelligent Task Orchestrator is a client-first execution planning workspace for
 
 | Environment | URL |
 |-------------|-----|
-| **Production (Vercel)** | Deploy with `npx vercel --prod`, then paste your URL here |
-| **Local** | [http://localhost:3000](http://localhost:3000) |
+| **Production (Vercel)** | https://intelligent-task-orchestrator.vercel.app/ |
 
 > **Before submission:** Run `npx vercel --prod` and add your live URL above.
 
