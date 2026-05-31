@@ -1,22 +1,9 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { AppShell } from "@/components/layout/app-shell";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 import { STYLE_BOOT_SCRIPT } from "@/lib/style-boot-script";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: `${APP_NAME} | ${APP_TAGLINE}`,
@@ -99,7 +86,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: STYLE_BOOT_SCRIPT }} />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-background text-foreground`}
+        className="font-sans antialiased bg-background text-foreground"
         suppressHydrationWarning
       >
         <AppShell>{children}</AppShell>
