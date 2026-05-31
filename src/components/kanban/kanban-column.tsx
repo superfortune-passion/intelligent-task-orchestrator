@@ -83,7 +83,7 @@ export function KanbanColumn({
         ))}
         {isLoading &&
           Array.from({ length: skeletonCount }).map((_, i) => (
-            <TaskCardSkeleton key={`skeleton-${i}`} />
+            <TaskCardSkeleton key={`skeleton-${i}`} index={i} />
           ))}
         {!isLoading && tasks.length === 0 && (
           <ColumnEmptyState columnTitle={title} />

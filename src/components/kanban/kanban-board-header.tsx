@@ -60,9 +60,9 @@ export function KanbanBoardHeader({
       </div>
 
       {isGenerating && (
-        <p className="text-xs text-indigo-300/90 flex items-center gap-2 animate-pulse">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-indigo-400" />
-          AI is building 5 categorized tasks for your To Do column...
+        <p className="text-xs text-indigo-300/90 flex items-center gap-2">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-indigo-400 magic-dot" />
+          Adding unique tasks to your To Do column…
         </p>
       )}
     </div>

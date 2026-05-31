@@ -1,6 +1,7 @@
 "use client";
 
-import { Sparkles, RefreshCw, AlertCircle, Loader2 } from "lucide-react";
+import { Sparkles, RefreshCw, AlertCircle } from "lucide-react";
+import { MagicGenerateLoading } from "@/components/ai/magic-generate-loading";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { MagicGenerateState } from "@/hooks/use-magic-generate";
@@ -23,20 +24,20 @@ export function MagicGenerateControl({
   const isLoading = state === "loading";
 
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
-      <Button
-        variant="magic"
-        onClick={onGenerate}
-        disabled={disabled || isLoading}
-        className="gap-2 shadow-lg shrink-0 w-full sm:w-auto"
-      >
-        {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-        ) : (
+    <div className={cn("flex flex-col gap-3 w-full sm:w-auto", className)}>
+      {isLoading ? (
+        <MagicGenerateLoading />
+      ) : (
+        <Button
+          variant="magic"
+          onClick={onGenerate}
+          disabled={disabled}
+          className="gap-2 shadow-lg shrink-0 w-full sm:w-auto"
+        >
           <Sparkles className="h-4 w-4" aria-hidden />
-        )}
-        <span>Magic Generate</span>
-      </Button>
+          <span>Magic Generate</span>
+        </Button>
+      )}
 
       {state === "error" && (
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5 animate-in fade-in duration-300">
@@ -60,6 +61,7 @@ export function MagicGenerateControl({
           </Button>
         </div>
       )}
+
     </div>
   );
 }

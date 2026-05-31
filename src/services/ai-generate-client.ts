@@ -1,20 +1,25 @@
 import type { GeneratePlanResult } from "@/types/ai";
 import { generateExecutionPlan } from "@/services/ai-plan";
 
+export interface RequestExecutionPlanOptions {
+  projectTitle: string;
+  existingTaskTitles?: string[];
+}
+
 /** Calls API route when available; falls back to local template engine */
 export async function requestExecutionPlan(
-  projectTitle: string
+  projectTitle: string,
+  existingTaskTitles: string[] = []
 ): Promise<GeneratePlanResult> {
   try {
     const response = await fetch("/api/ai/generate-plan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ projectTitle }),
+      body: JSON.stringify({ projectTitle, existingTaskTitles }),
     });
 
     if (!response.ok) {
-      const fallback = await generateExecutionPlan(projectTitle);
-      return fallback;
+      return generateExecutionPlan(projectTitle, existingTaskTitles);
     }
 
     const data = (await response.json()) as GeneratePlanResult;
@@ -22,8 +27,12 @@ export async function requestExecutionPlan(
       return data;
     }
 
-    return generateExecutionPlan(projectTitle);
+    if (!data.success) {
+      return data;
+    }
+
+    return generateExecutionPlan(projectTitle, existingTaskTitles);
   } catch {
-    return generateExecutionPlan(projectTitle);
+    return generateExecutionPlan(projectTitle, existingTaskTitles);
   }
 }
