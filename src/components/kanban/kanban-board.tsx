@@ -174,7 +174,7 @@ export function KanbanBoard({
   };
 
   return (
-    <div>
+    <div className="min-w-0">
       <KanbanBoardHeader
         taskCount={tasks.length}
         magicState={magicState}
@@ -191,7 +191,7 @@ export function KanbanBoard({
         onDragCancel={handleDragCancel}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 pb-6">
+        <div className="kanban-grid">
           {TASK_STATUSES.map((col) => {
             const showSkeleton = isGenerating && col.id === "To Do";
             return (

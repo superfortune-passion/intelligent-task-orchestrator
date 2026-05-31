@@ -13,9 +13,11 @@ export function Toaster() {
         <div
           key={t.id}
           className={cn(
-            "pointer-events-auto glass-card rounded-lg p-4 shadow-xl animate-in slide-in-from-bottom-2 fade-in duration-300 flex gap-3",
-            t.variant === "destructive" && "border-red-500/30",
-            t.variant === "success" && "border-emerald-500/30"
+            "pointer-events-auto glass-card rounded-lg p-4 shadow-xl animate-in slide-in-from-bottom-2 fade-in duration-300 flex gap-3 transition-all",
+            t.variant === "destructive" &&
+              "border-red-500/40 bg-red-500/5 shadow-red-500/10",
+            t.variant === "success" &&
+              "border-emerald-500/40 bg-emerald-500/5 shadow-emerald-500/10"
           )}
         >
           {t.variant === "success" && (

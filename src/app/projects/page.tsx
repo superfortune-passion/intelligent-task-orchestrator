@@ -33,11 +33,11 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div className="dashboard-page page-shell p-4 sm:p-6 md:p-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold text-foreground">Projects</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="typo-page-title">Projects</h1>
+          <p className="typo-muted mt-1.5">
             Manage all execution workspaces
           </p>
         </div>

@@ -40,7 +40,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               Intelligent Task Orchestrator
             </span>
           </header>
-          <main className="min-h-[calc(100vh-3.5rem)] lg:min-h-screen">
+          <main className="min-h-[calc(100vh-3.5rem)] lg:min-h-screen min-w-0 overflow-x-hidden">
             {children}
           </main>
         </div>

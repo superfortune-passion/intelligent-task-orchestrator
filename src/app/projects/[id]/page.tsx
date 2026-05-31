@@ -107,10 +107,10 @@ export default function ProjectWorkspacePage({
 
   return (
     <div
-      className="p-4 sm:p-6 md:p-8 max-w-[1600px] mx-auto w-full overflow-x-hidden"
+      className="project-page page-shell-wide p-4 sm:p-6 md:p-8"
       data-project-board
     >
-      <div className="mb-6">
+      <div className="mb-6 sm:mb-8">
         <Button
           variant="ghost"
           size="sm"
@@ -136,7 +136,7 @@ export default function ProjectWorkspacePage({
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl font-bold text-foreground break-words">
+                <h1 className="typo-page-title break-words">
                   {project.title}
                 </h1>
                 <Button
@@ -168,9 +168,9 @@ export default function ProjectWorkspacePage({
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-3 mb-6">
+      <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 mb-6 sm:mb-8 min-w-0">
         <div className="relative flex-1 min-w-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             placeholder="Search tasks..."
             value={searchQuery}
@@ -179,13 +179,13 @@ export default function ProjectWorkspacePage({
             disabled={magic.isGenerating}
           />
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 min-w-0">
           <Select
             value={filterPriority}
             onValueChange={setFilterPriority}
             disabled={magic.isGenerating}
           >
-            <SelectTrigger className="w-full sm:w-[150px]">
+            <SelectTrigger className="w-full sm:w-[160px] filter-control">
               <Filter className="h-3.5 w-3.5 mr-1 text-muted-foreground shrink-0" />
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
@@ -203,7 +203,7 @@ export default function ProjectWorkspacePage({
             onValueChange={setFilterCategory}
             disabled={magic.isGenerating}
           >
-            <SelectTrigger className="w-full sm:w-[150px]">
+            <SelectTrigger className="w-full sm:w-[160px] filter-control">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>

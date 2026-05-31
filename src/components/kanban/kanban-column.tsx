@@ -58,9 +58,10 @@ export function KanbanColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        "flex flex-col min-h-[280px] rounded-xl border border-border/50 bg-background/30 transition-all duration-300",
+        "flex flex-col min-h-[280px] min-w-0 rounded-xl border border-border/50 bg-background/30 transition-all duration-300",
+        "hover:border-border/70",
         columnAccent[status],
-        isOver && "ring-2 ring-indigo-500/40 bg-indigo-500/8 scale-[1.01]"
+        isOver && "ring-2 ring-indigo-500/40 bg-indigo-500/8 scale-[1.01] shadow-lg shadow-indigo-500/10"
       )}
     >
       <div className="flex items-center gap-2 px-4 py-3 border-b border-border/40 shrink-0">
@@ -71,7 +72,11 @@ export function KanbanColumn({
         </span>
       </div>
 
-      <div className="flex flex-col gap-2.5 p-3 flex-1 min-h-[180px]">
+      <div
+        className="flex flex-col gap-2.5 p-3 flex-1 min-h-[180px] min-w-0"
+        aria-busy={isLoading}
+        aria-label={isLoading ? `Generating tasks for ${title}` : undefined}
+      >
         {tasks.map((task) => (
           <TaskCard
             key={task.id}
@@ -95,7 +100,7 @@ export function KanbanColumn({
           type="button"
           variant="ghost"
           size="sm"
-          className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-dashed border-border/50"
+          className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/60 border border-dashed border-border/50 transition-all duration-200 hover:border-indigo-500/30"
           onClick={() => onAddTask(status)}
           disabled={addTaskDisabled}
         >

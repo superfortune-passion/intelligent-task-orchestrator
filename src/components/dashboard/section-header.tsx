@@ -22,11 +22,11 @@ export function SectionHeader({
       )}
     >
       <div className="min-w-0">
-        <h2 className="text-lg sm:text-xl font-semibold text-foreground tracking-tight">
+        <h2 className="typo-section-title">
           {title}
         </h2>
         {description && (
-          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed max-w-lg">
+          <p className="typo-muted mt-1.5 max-w-lg">
             {description}
           </p>
         )}

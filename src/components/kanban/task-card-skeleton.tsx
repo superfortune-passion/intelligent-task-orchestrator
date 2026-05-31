@@ -10,7 +10,7 @@ export function TaskCardSkeleton({ index = 0 }: TaskCardSkeletonProps) {
     <div
       className={cn(
         "glass-card rounded-lg p-3.5 space-y-3 skeleton-card-enter",
-        "border border-indigo-500/10"
+        "border border-indigo-500/20 ring-1 ring-indigo-500/10"
       )}
       style={{ animationDelay: `${index * 80}ms` }}
       aria-hidden

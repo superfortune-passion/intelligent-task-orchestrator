@@ -23,14 +23,14 @@ export function KanbanBoardHeader({
   isGenerating,
 }: KanbanBoardHeaderProps) {
   return (
-    <div className="mb-5 space-y-4">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div className="mb-6 sm:mb-8 space-y-4 min-w-0">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-5">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/15 border border-indigo-500/25 shrink-0">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/15 border border-indigo-500/25 shrink-0 transition-shadow duration-300 hover:shadow-indigo-500/20">
             <LayoutGrid className="h-5 w-5 text-indigo-400" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="typo-section-title">
               Execution Board
             </h2>
             <p className="text-xs text-muted-foreground mt-0.5">

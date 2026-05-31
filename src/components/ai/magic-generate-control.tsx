@@ -40,7 +40,10 @@ export function MagicGenerateControl({
       )}
 
       {state === "error" && (
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5 animate-in fade-in duration-300">
+        <div
+          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 rounded-xl border border-red-500/40 bg-red-500/8 animate-in fade-in slide-in-from-top-1 duration-300"
+          role="alert"
+        >
           <div className="flex items-start gap-3 flex-1 min-w-0">
             <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
             <div className="min-w-0">

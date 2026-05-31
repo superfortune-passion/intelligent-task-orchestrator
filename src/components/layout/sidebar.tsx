@@ -38,7 +38,7 @@ export function Sidebar({
     <>
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity duration-300"
           onClick={onMobileClose}
           aria-hidden
         />
@@ -58,10 +58,10 @@ export function Sidebar({
         >
           <Link
             href="/"
-            className="flex items-center gap-2.5 min-w-0"
+            className="flex items-center gap-2.5 min-w-0 rounded-lg transition-opacity duration-200 hover:opacity-90"
             onClick={onMobileClose}
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg magic-gradient shadow-lg shadow-indigo-500/20">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg magic-gradient shadow-lg shadow-indigo-500/20 transition-shadow duration-300 hover:shadow-indigo-500/35">
               <Sparkles className="h-4 w-4 text-white" />
             </div>
             {!collapsed && (
@@ -88,17 +88,15 @@ export function Sidebar({
                 key={item.href}
                 href={item.href}
                 onClick={onMobileClose}
+                data-active={isActive}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                  isActive
-                    ? "bg-indigo-500/15 text-indigo-300 shadow-sm"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  "nav-item flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
                   collapsed && "justify-center px-2"
                 )}
                 title={collapsed ? item.label : undefined}
               >
                 <item.icon className="h-4 w-4 shrink-0" />
-                {!collapsed && <span>{item.label}</span>}
+                {!collapsed && <span className="truncate">{item.label}</span>}
               </Link>
             );
           })}
@@ -106,7 +104,7 @@ export function Sidebar({
 
         <div className="border-t border-border/60 p-3 space-y-2">
           {!collapsed && (
-            <div className="rounded-lg bg-indigo-500/10 border border-indigo-500/20 p-3">
+            <div className="rounded-lg bg-indigo-500/10 border border-indigo-500/20 p-3 transition-colors duration-200 hover:border-indigo-500/30">
               <p className="text-xs font-medium text-indigo-300">AI Powered</p>
               <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
                 Generate execution plans from project ideas in seconds.
@@ -116,7 +114,7 @@ export function Sidebar({
           <button
             type="button"
             className={cn(
-              "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors",
+              "nav-item flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground",
               collapsed && "justify-center"
             )}
           >
@@ -127,7 +125,7 @@ export function Sidebar({
             <Button
               variant="ghost"
               size="icon"
-              className="hidden lg:flex w-full"
+              className="hidden lg:flex w-full hover:bg-muted/80"
               onClick={onToggle}
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >

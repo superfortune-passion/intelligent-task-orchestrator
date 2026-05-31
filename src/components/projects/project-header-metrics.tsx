@@ -75,7 +75,7 @@ function MetricPill({
     <div
       className={cn(
         "inline-flex items-center gap-2 rounded-lg border px-2.5 py-1.5 sm:px-3 sm:py-2",
-        "glass-card min-w-0",
+        "glass-card glass-card-hover min-w-0",
         accentMap[accent],
         wide && "min-w-[8.5rem]"
       )}

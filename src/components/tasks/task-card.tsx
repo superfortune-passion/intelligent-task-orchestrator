@@ -59,8 +59,7 @@ export function TaskCard({
         "glass-card rounded-lg p-3.5 group touch-manipulation relative",
         dragging &&
           "opacity-90 shadow-2xl ring-2 ring-indigo-500/50 scale-[1.02] z-50",
-        !dragging &&
-          "glass-card-hover hover:shadow-lg hover:shadow-indigo-500/10",
+        !dragging && "glass-card-hover",
         isNew && "task-enter ring-1 ring-indigo-500/30"
       )}
     >

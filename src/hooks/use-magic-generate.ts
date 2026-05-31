@@ -87,7 +87,10 @@ export function useMagicGenerate(projectId: string, projectTitle: string) {
 
       const count = created.length;
       toast({
-        title: count === PLAN_SIZE ? "5 AI tasks generated" : `${count} AI tasks generated`,
+        title:
+          count === PLAN_SIZE
+            ? "5 AI tasks generated"
+            : `${count} AI task${count !== 1 ? "s" : ""} generated`,
         description: `${count} new task${count !== 1 ? "s" : ""} added to To Do.`,
         variant: "success",
       });

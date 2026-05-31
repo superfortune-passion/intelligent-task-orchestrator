@@ -28,7 +28,7 @@ export function DashboardStatCard({
   return (
     <div
       className={cn(
-        "glass-card glass-card-hover rounded-xl p-5 sm:p-6 flex flex-col gap-4 min-w-0 overflow-hidden",
+        "glass-card glass-card-hover rounded-xl p-5 sm:p-6 flex flex-col gap-4 min-w-0 overflow-hidden cursor-default",
         className
       )}
     >
