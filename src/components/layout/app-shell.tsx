@@ -15,7 +15,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <AppProvider>
       <ChunkLoadRecovery />
-      <div className="app-gradient min-h-screen">
+      <div className="app-gradient min-h-screen" data-ito-shell>
         <Sidebar
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed((c) => !c)}

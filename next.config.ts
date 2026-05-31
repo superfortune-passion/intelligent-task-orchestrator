@@ -1,14 +1,8 @@
 import type { NextConfig } from "next";
 
+/** Keep config minimal — custom webpack + Turbopack together causes ENOENT/500 on Windows dev refresh */
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  webpack: (config, { dev }) => {
-    // Production builds only; dev uses Turbopack (see scripts/dev-fresh.js)
-    if (dev) {
-      config.cache = false;
-    }
-    return config;
-  },
 };
 
 export default nextConfig;
